@@ -33,6 +33,7 @@ object Player {
         val emitter = ECSEngine.createComponent(ParticleEmitter::class.java)
         dim.set(5f, 5f)
         dir.set(200f, 200f)
+        pos.z = 1f
         draw.batch = AmbContext.cxt.inject()
         draw.tr = assMan.textureRegions["debris"]
         entity.add(pos).add(dir).add(dim).add(time).add(draw).add(control).add(emitter)
