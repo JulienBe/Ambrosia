@@ -19,7 +19,7 @@ class WandererSystem : IteratingSystem(family) {
         val dir = dirMapper.get(entity)
         val time = timeMapper.get(entity)
         if (wanderer.nextPush < time.total) {
-            wanderer.nextPush = time.total + wanderer.pushRate * 100000f
+            wanderer.nextPush = time.total + wanderer.pushRate
             dir.addX(r.gauss(wanderer.amplitude))
             dir.addY(r.gauss(wanderer.amplitude))
         }

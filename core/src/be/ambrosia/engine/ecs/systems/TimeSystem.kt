@@ -12,6 +12,9 @@ class TimeSystem : IteratingSystem(family) {
         val e = time.get(entity)
         e.delta = deltaTime
         e.total += e.delta
+        e.timers.forEach {
+            it.value.current += e.delta
+        }
     }
 
     companion object {

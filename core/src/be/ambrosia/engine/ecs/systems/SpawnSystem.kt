@@ -10,7 +10,6 @@ import ktx.ashley.allOf
 
 class SpawnSystem : IteratingSystem(family) {
 
-
     override fun processEntity(entity: Entity, deltaTime: Float) {
         val spawn = timedSpawnMapper.get(entity)
         val time = timeMapper.get(entity)

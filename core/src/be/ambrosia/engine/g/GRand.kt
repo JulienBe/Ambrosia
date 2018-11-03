@@ -28,6 +28,10 @@ class GRand: Random() {
         return min + (nextFloat() * (max - min))
     }
 
+    fun float(max: Float): Float {
+        return (nextFloat() * max)
+    }
+
     fun int(min: Int, max: Int): Int {
         return min + nextInt(max - min)
     }

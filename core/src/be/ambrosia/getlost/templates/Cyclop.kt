@@ -3,6 +3,7 @@ package be.ambrosia.getlost.templates
 import be.ambrosia.engine.AmbContext
 import be.ambrosia.engine.AssMan
 import be.ambrosia.engine.Dimensions
+import be.ambrosia.engine.Timer
 import be.ambrosia.engine.ecs.ECSEngine
 import be.ambrosia.engine.ecs.components.*
 import be.ambrosia.engine.g.GBatch
@@ -19,7 +20,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
 
 object Cyclop {
 
-    val rand = AmbContext.cxt.inject<GRand>()
     val assMan: AssMan = AmbContext.cxt.inject()
     val b: GBatch = AmbContext.cxt.inject()
     val b3d: ModelBatch = AmbContext.cxt.inject()
@@ -27,8 +27,11 @@ object Cyclop {
             Material(ColorAttribute.createDiffuse(Color.GREEN)),
             VertexAttributes.Usage.Position.toLong() or VertexAttributes.Usage.Normal.toLong())
     val width = 40f
+    val hw = width / 2f
+    val reproduceTimerKey = "repro"
+    val reproduceTimerValue = 10f
 
-    fun init(entity: Entity): Entity {
+    fun init(entity: Entity, x: Float, y: Float): Entity {
         val pos = ECSEngine.createComponent(PosComp::class.java)
         val dir = ECSEngine.createComponent(DirComp::class.java)
         val dim = ECSEngine.createComponent(DimComp::class.java)
@@ -39,13 +42,14 @@ object Cyclop {
         val body = ECSEngine.createComponent(BodyComp::class.java)
         val collider = ECSEngine.createComponent(ColliderComp::class.java)
 
+        time.timers.put(reproduceTimerKey, Timer())
         wanderer.amplitude = 40f
         collider.colliding = ::colliding
         body.scale(width, width)
         dim.set(width, width)
         dir.setSpeed(0f, 200f)
-        pos.x = rand.float(0f, Dimensions.gameWidth)
-        pos.y = rand.float(0f, Dimensions.gameHeight)
+        pos.x = x
+        pos.y = y
         draw.batch = AmbContext.cxt.inject()
         draw.tr = assMan.textureRegions["debris"]
         draw.color = GColor.convertARGB(1f, 0.5f, 0.7f, 0.2f)
@@ -54,7 +58,13 @@ object Cyclop {
     }
 
     fun colliding(me: Entity, other: Entity) {
-
+        val pos = PosComp.mapper.get(me)
+        val time = TimeComp.mapper.get(me)
+        if (time.timers[reproduceTimerKey].current > reproduceTimerValue) {
+            val cyclop = init(ECSEngine.createEntity(), pos.x + hw, pos.y + hw)
+            ECSEngine.addEntity(cyclop)
+            time.timers[reproduceTimerKey].reset()
+        }
     }
 
     fun emitParticle(): Particle {
