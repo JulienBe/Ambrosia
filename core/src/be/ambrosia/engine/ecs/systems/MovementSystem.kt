@@ -10,19 +10,21 @@ import ktx.ashley.allOf
 
 class MovementSystem : IteratingSystem(family) {
 
-    val posMapper = PosComp.mapper
-    val dirMapper = DirComp.mapper
-    val timeMapper = TimeComp.mapper
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         val pos = posMapper.get(entity)
         val dir = dirMapper.get(entity)
         val time = timeMapper.get(entity)
-        pos.x += dir.dir.x * time.delta
-        pos.y += dir.dir.y * time.delta
+        pos.x += dir.dirX * time.delta
+        pos.y += dir.dirY * time.delta
+        dir.validate()
     }
 
     companion object {
+        val posMapper = PosComp.mapper
+        val dirMapper = DirComp.mapper
+        val timeMapper = TimeComp.mapper
+
         val family: Family = allOf(
                 PosComp::class,
                 DirComp::class,

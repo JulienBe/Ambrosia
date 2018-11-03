@@ -12,9 +12,6 @@ import java.util.*
 
 class Drawing2DSystem : SortedIteratingSystem(family, ZComparator()) {
 
-    val pos = PosComp.mapper
-    val dim = DimComp.mapper
-    val drawable = Drawable2DComp.mapper
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         val pos = pos.get(entity)
@@ -34,5 +31,9 @@ class Drawing2DSystem : SortedIteratingSystem(family, ZComparator()) {
 
     companion object {
         val family: Family = allOf(PosComp::class, DimComp::class, Drawable2DComp::class).get()
+
+        val pos = PosComp.mapper
+        val dim = DimComp.mapper
+        val drawable = Drawable2DComp.mapper
     }
 }

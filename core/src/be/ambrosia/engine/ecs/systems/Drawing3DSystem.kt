@@ -11,9 +11,6 @@ import ktx.ashley.allOf
 
 class Drawing3DSystem : IteratingSystem(family) {
 
-    val pos = PosComp.mapper
-    val dim = DimComp.mapper
-    val drawable = Drawable3DComp.mapper
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         val pos = pos.get(entity)
@@ -25,5 +22,9 @@ class Drawing3DSystem : IteratingSystem(family) {
 
     companion object {
         val family: Family = allOf(PosComp::class, DimComp::class, Drawable3DComp::class).get()
+
+        val pos = PosComp.mapper
+        val dim = DimComp.mapper
+        val drawable = Drawable3DComp.mapper
     }
 }

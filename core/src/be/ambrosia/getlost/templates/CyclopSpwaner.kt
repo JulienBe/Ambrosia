@@ -2,7 +2,6 @@ package be.ambrosia.getlost.templates
 
 import be.ambrosia.engine.ecs.ECSEngine
 import be.ambrosia.engine.ecs.components.*
-import be.ambrosia.engine.ecs.systems.WandererSystem
 import com.badlogic.ashley.core.Entity
 
 object CyclopSpwaner {
@@ -17,7 +16,8 @@ object CyclopSpwaner {
     }
 
     fun determineNextSpawn(): Float {
-        return ECSEngine.getEntitiesFor(WandererSystem.family).size().toFloat()
+        return 0.5f
+//        return ECSEngine.getEntitiesFor(WandererSystem.family).size().toFloat()
     }
 
     fun spawn(): Entity {

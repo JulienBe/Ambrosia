@@ -31,8 +31,9 @@ object Player {
         val draw = ECSEngine.createComponent(Drawable2DComp::class.java)
         val control = ECSEngine.createComponent(ControlComp::class.java)
         val emitter = ECSEngine.createComponent(ParticleEmitter::class.java)
+
         dim.set(5f, 5f)
-        dir.set(200f, 200f)
+        dir.setSpeed(200f, 200f)
         pos.z = 1f
         draw.batch = AmbContext.cxt.inject()
         draw.tr = assMan.textureRegions["debris"]

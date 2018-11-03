@@ -13,23 +13,23 @@ import ktx.ashley.allOf
 
 class WandererSystem : IteratingSystem(family) {
 
-    val wandererMapper = WandererComp.mapper
-    val dirMapper = DirComp.mapper
-    val timeMapper = TimeComp.mapper
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         val wanderer = wandererMapper.get(entity)
         val dir = dirMapper.get(entity)
         val time = timeMapper.get(entity)
         if (wanderer.nextPush < time.total) {
-            wanderer.nextPush = time.total + wanderer.pushRate
-            dir.dir.x += r.gauss(wanderer.amplitude)
-            dir.dir.y += r.gauss(wanderer.amplitude)
-            dir.dir.clamp(dir.minSpeed, dir.maxSpeed)
+            wanderer.nextPush = time.total + wanderer.pushRate * 100000f
+            dir.addX(r.gauss(wanderer.amplitude))
+            dir.addY(r.gauss(wanderer.amplitude))
         }
     }
 
     companion object {
+        val wandererMapper = WandererComp.mapper
+        val dirMapper = DirComp.mapper
+        val timeMapper = TimeComp.mapper
+
         val family: Family = allOf(
                 PosComp::class,
                 WandererComp::class,

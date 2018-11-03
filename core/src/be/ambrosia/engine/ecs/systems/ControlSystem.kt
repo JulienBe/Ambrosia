@@ -10,22 +10,19 @@ import ktx.ashley.allOf
 
 class ControlSystem : IteratingSystem(family) {
 
-    val controlMapper = ControlComp.mapper
-    val dirMapper = DirComp.mapper
-
     override fun processEntity(entity: Entity, deltaTime: Float) {
         val dir = dirMapper.get(entity)
         val control = controlMapper.get(entity)
-        dir.dir.set(0f, 0f)
+        dir.setDir(0f, 0f)
         if (checkKeys(control.left))
-            dir.dir.x += -1f
+            dir.addX(-1f)
         if (checkKeys(control.right))
-            dir.dir.x += 1f
+            dir.addX(1f)
         if (checkKeys(control.down))
-            dir.dir.y += -1f
+            dir.addY(-1f)
         if (checkKeys(control.up))
-            dir.dir.y += 1f
-        dir.dir.setLength(1f * dir.maxSpeed)
+            dir.addY(1f)
+        dir.setDirLength(1f * dir.maxSpeed)
     }
 
     fun checkKeys(keys: List<Int>): Boolean {
@@ -37,6 +34,9 @@ class ControlSystem : IteratingSystem(family) {
     }
 
     companion object {
+        val controlMapper = ControlComp.mapper
+        val dirMapper = DirComp.mapper
+
         val family: Family = allOf(
                 DirComp::class,
                 ControlComp::class).get()

@@ -3,7 +3,6 @@ package be.ambrosia.engine.ecs.systems
 import be.ambrosia.engine.ecs.ECSEngine
 import be.ambrosia.engine.ecs.components.TimeComp
 import be.ambrosia.engine.ecs.components.TimedSpawnComp
-import be.ambrosia.engine.ecs.systems.WandererSystem.Companion.r
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IteratingSystem
@@ -11,8 +10,6 @@ import ktx.ashley.allOf
 
 class SpawnSystem : IteratingSystem(family) {
 
-    val timedSpawnMapper = TimedSpawnComp.mapper
-    val timeMapper = TimeComp.mapper
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         val spawn = timedSpawnMapper.get(entity)
@@ -24,6 +21,9 @@ class SpawnSystem : IteratingSystem(family) {
     }
 
     companion object {
+        val timedSpawnMapper = TimedSpawnComp.mapper
+        val timeMapper = TimeComp.mapper
+
         val family: Family = allOf(
                 TimedSpawnComp::class,
                 TimeComp::class).get()

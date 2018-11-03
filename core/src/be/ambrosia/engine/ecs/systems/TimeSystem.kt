@@ -8,8 +8,6 @@ import ktx.ashley.allOf
 
 class TimeSystem : IteratingSystem(family) {
 
-    val time = TimeComp.mapper
-
     override fun processEntity(entity: Entity, deltaTime: Float) {
         val e = time.get(entity)
         e.delta = deltaTime
@@ -18,5 +16,6 @@ class TimeSystem : IteratingSystem(family) {
 
     companion object {
         val family: Family = allOf(TimeComp::class).get()
+        val time = TimeComp.mapper
     }
 }

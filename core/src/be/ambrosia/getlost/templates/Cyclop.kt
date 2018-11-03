@@ -26,6 +26,7 @@ object Cyclop {
     val model = Drawable3DComp.modelBuilder.createBox(5f, 5f, 5f,
             Material(ColorAttribute.createDiffuse(Color.GREEN)),
             VertexAttributes.Usage.Position.toLong() or VertexAttributes.Usage.Normal.toLong())
+    val width = 40f
 
     fun init(entity: Entity): Entity {
         val pos = ECSEngine.createComponent(PosComp::class.java)
@@ -35,15 +36,25 @@ object Cyclop {
         val draw = ECSEngine.createComponent(Drawable2DComp::class.java)
         val emitter = ECSEngine.createComponent(ParticleEmitter::class.java)
         val wanderer = ECSEngine.createComponent(WandererComp::class.java)
-        dim.set(5f, 5f)
-        dir.set(0f, 200f)
+        val body = ECSEngine.createComponent(BodyComp::class.java)
+        val collider = ECSEngine.createComponent(ColliderComp::class.java)
+
+        wanderer.amplitude = 40f
+        collider.colliding = ::colliding
+        body.scale(width, width)
+        dim.set(width, width)
+        dir.setSpeed(0f, 200f)
         pos.x = rand.float(0f, Dimensions.gameWidth)
         pos.y = rand.float(0f, Dimensions.gameHeight)
         draw.batch = AmbContext.cxt.inject()
         draw.tr = assMan.textureRegions["debris"]
         draw.color = GColor.convertARGB(1f, 0.5f, 0.7f, 0.2f)
-        entity.add(pos).add(dir).add(dim).add(time).add(draw).add(emitter).add(wanderer)
+        entity.add(pos).add(dir).add(dim).add(time).add(draw).add(emitter).add(wanderer).add(body).add(collider)
         return entity
+    }
+
+    fun colliding(me: Entity, other: Entity) {
+
     }
 
     fun emitParticle(): Particle {
