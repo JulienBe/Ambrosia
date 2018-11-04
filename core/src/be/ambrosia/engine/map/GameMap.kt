@@ -7,15 +7,19 @@ import ktx.collections.GdxArray
 object GameMap {
     val map = GdxArray<MapTile>(true, 32)
     var tileSize = Dimensions.pixel * 25f
+    var tileHalfSize = tileSize / 2f
     var w = 0
     var h = 0
 
     fun init(w: Int, h: Int) {
         this.w = w
         this.h = h
-        for (x in 0..w) // 3
-            for (y in 0..h)  // 2
-                map.add(MapTile.pool.obtain())
+        for (x in 0 until w) // 3
+            for (y in 0 until h) { // 2
+                val t = MapTile.pool.obtain()
+                t.set(x, y)
+                map.add(t)
+            }
 //        0 -> 0 0
 //        1 -> 0 1
 //        2 -> 1 0
@@ -28,6 +32,7 @@ object GameMap {
         val endX = Math.max(x1, x2)
         val beginY = Math.min(y1, y2)
         val endY = Math.max(y1, y2)
+
         for (x in beginX..endX)
             for (y in beginY..endY) {
                 getTile(x, y).elements.add(element)
@@ -35,7 +40,9 @@ object GameMap {
     }
 
     fun getTile(x: Int, y: Int): MapTile {
-        return map.get(x * h + y % h)
+//        return map.get(x * h + y % h)
+        println("get $x $y for map $w $h")
+        return map.get(x * w + y)
     }
 
     fun getX(index: Int): Int {
@@ -47,9 +54,17 @@ object GameMap {
     }
 
     fun draw(b: GBatch) {
-        map.forEachIndexed { index, mapTile ->
-            mapTile.draw(b, getX(index), getY(index))
+        map.forEach {
+            it.draw(b)
         }
+    }
+
+    fun getTileInWorldCoord(x: Float, y: Float): MapTile {
+        return getTile((x / tileSize).toInt(), (y / tileSize).toInt())
+    }
+
+    fun removeElement(x: Int, y: Int, mapElement: MapElement) {
+        getTile(x, y).elements.removeValue(mapElement, true)
     }
 
 }

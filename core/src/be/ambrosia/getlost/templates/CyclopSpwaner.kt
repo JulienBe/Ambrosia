@@ -23,7 +23,7 @@ object CyclopSpwaner {
 
     private fun determineNextSpawn(): Float {
 //        return 1f
-        return ECSEngine.getEntitiesFor(WandererSystem.family).size().toFloat()
+        return ECSEngine.getEntitiesFor(WandererSystem.family).size() * ECSEngine.getEntitiesFor(WandererSystem.family).size().toFloat()
     }
 
     private fun spawn(): Entity {

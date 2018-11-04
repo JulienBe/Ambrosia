@@ -6,9 +6,14 @@ import be.ambrosia.engine.Dimensions
 import be.ambrosia.engine.Timer
 import be.ambrosia.engine.ecs.ECSEngine
 import be.ambrosia.engine.ecs.components.*
+import be.ambrosia.engine.ecs.systems.CollisionSystem
+import be.ambrosia.engine.ecs.systems.CollisionSystem.Companion.wallCollision
 import be.ambrosia.engine.g.GBatch
 import be.ambrosia.engine.g.GColor
 import be.ambrosia.engine.g.GRand
+import be.ambrosia.engine.map.GameMap
+import be.ambrosia.engine.map.MapElement
+import be.ambrosia.engine.map.elements.Wall
 import be.ambrosia.engine.particles.Particle
 import be.ambrosia.engine.particles.Particle3D
 import com.badlogic.ashley.core.Entity
@@ -26,7 +31,7 @@ object Cyclop {
     val model = Drawable3DComp.modelBuilder.createBox(5f, 5f, 5f,
             Material(ColorAttribute.createDiffuse(Color.GREEN)),
             VertexAttributes.Usage.Position.toLong() or VertexAttributes.Usage.Normal.toLong())
-    val width = 40f
+    val width = 5f
     val hw = width / 2f
     val reproduceTimerKey = "repro"
     val reproduceTimerValue = 10f
@@ -42,12 +47,20 @@ object Cyclop {
         val body = ECSEngine.createComponent(BodyComp::class.java)
         val collider = ECSEngine.createComponent(ColliderComp::class.java)
 
-        time.timers.put(reproduceTimerKey, Timer())
-        wanderer.amplitude = 40f
+        collider.tileElementColliding.add(MapElement.wall)
+        collider.collidingTile = {entity, mapTile, mapElement ->
+            if (mapElement is Wall) {
+                CollisionSystem.wallCollision(
+                        PosComp.mapper.get(entity), DirComp.mapper.get(entity), DimComp.mapper.get(entity), mapElement
+                )
+            }
+        }
         collider.colliding = ::colliding
+        time.timers.put(reproduceTimerKey, Timer())
+        wanderer.amplitude = 5f
         body.scale(width, width)
         dim.set(width, width)
-        dir.setSpeed(0f, 200f)
+        dir.setSpeed(0f, 100f)
         pos.x = x
         pos.y = y
         draw.batch = AmbContext.cxt.inject()

@@ -13,7 +13,6 @@ import ktx.ashley.allOf
 
 class WandererSystem : IteratingSystem(family) {
 
-
     override fun processEntity(entity: Entity, deltaTime: Float) {
         val wanderer = wandererMapper.get(entity)
         val dir = dirMapper.get(entity)
