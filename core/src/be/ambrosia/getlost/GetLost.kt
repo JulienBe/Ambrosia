@@ -14,6 +14,7 @@ class GetLost : KtxGame<Screen>() {
             AssMan("atlas/textures.atlas", listOf<String>("debris"))
         }
         ECSEngine.addSystem(MovementSystem())
+        ECSEngine.addSystem(CollisionSystem())
         ECSEngine.addSystem(Drawing2DSystem())
         ECSEngine.addSystem(Drawing3DSystem())
         ECSEngine.addSystem(ControlSystem())
@@ -21,7 +22,6 @@ class GetLost : KtxGame<Screen>() {
         ECSEngine.addSystem(WandererSystem())
         ECSEngine.addSystem(SpawnSystem())
         ECSEngine.addSystem(BodySystem())
-        ECSEngine.addSystem(CollisionSystem())
 
         addScreen(Main())
         setScreen<Main>()

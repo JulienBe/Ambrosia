@@ -16,6 +16,7 @@ import be.ambrosia.engine.map.MapElement
 import be.ambrosia.engine.map.elements.Wall
 import be.ambrosia.engine.particles.Particle
 import be.ambrosia.engine.particles.Particle3D
+import be.ambrosia.getlost.Ids
 import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.VertexAttributes
@@ -46,12 +47,14 @@ object Cyclop {
         val wanderer = ECSEngine.createComponent(WandererComp::class.java)
         val body = ECSEngine.createComponent(BodyComp::class.java)
         val collider = ECSEngine.createComponent(ColliderComp::class.java)
+        val id = ECSEngine.createComponent(IdComp::class.java)
+        id.id = Ids.cyclop
 
         collider.tileElementColliding.add(MapElement.wall)
         collider.collidingTile = {entity, mapTile, mapElement ->
             if (mapElement is Wall) {
                 CollisionSystem.wallCollision(
-                        PosComp.mapper.get(entity), DirComp.mapper.get(entity), DimComp.mapper.get(entity), mapElement
+                        PosComp.mapper.get(entity), DirComp.mapper.get(entity), DimComp.mapper.get(entity), mapElement, mapTile
                 )
             }
         }
@@ -66,11 +69,13 @@ object Cyclop {
         draw.batch = AmbContext.cxt.inject()
         draw.tr = assMan.textureRegions["debris"]
         draw.color = GColor.convertARGB(1f, 0.5f, 0.7f, 0.2f)
-        entity.add(pos).add(dir).add(dim).add(time).add(draw).add(emitter).add(wanderer).add(body).add(collider)
+        entity.add(pos).add(dir).add(dim).add(time).add(draw).add(emitter).add(wanderer).add(body).add(collider).add(id)
         return entity
     }
 
     fun colliding(me: Entity, other: Entity) {
+        if (IdComp.mapper.has(other) && IdComp.mapper.get(other).id != Ids.cyclop)
+            return
         val pos = PosComp.mapper.get(me)
         val time = TimeComp.mapper.get(me)
         if (time.timers[reproduceTimerKey].current > reproduceTimerValue) {

@@ -12,6 +12,9 @@ class MapTile private constructor() {
     var worldY = 0f
     var worldCenterX = worldX + GameMap.tileHalfSize
     var worldCenterY = worldY + GameMap.tileHalfSize
+    var worldRight = worldX + GameMap.tileSize
+    var worldUp = worldY + GameMap.tileSize
+
 
     fun set(x: Int, y: Int) {
         this.x = x

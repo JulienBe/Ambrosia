@@ -6,5 +6,4 @@ import com.badlogic.gdx.utils.Pool
 interface TemplateComp : Component, Pool.Poolable {
     override fun reset() {
     }
-
 }

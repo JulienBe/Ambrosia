@@ -2,6 +2,7 @@ package be.ambrosia.engine.map
 
 import be.ambrosia.engine.Dimensions
 import be.ambrosia.engine.g.GBatch
+import com.badlogic.gdx.math.MathUtils
 import ktx.collections.GdxArray
 
 object GameMap {
@@ -41,8 +42,7 @@ object GameMap {
 
     fun getTile(x: Int, y: Int): MapTile {
 //        return map.get(x * h + y % h)
-        println("get $x $y for map $w $h")
-        return map.get(x * w + y)
+        return map.get(MathUtils.clamp(x, 0, w) * w + MathUtils.clamp(y, 0, h))
     }
 
     fun getX(index: Int): Int {
@@ -60,7 +60,7 @@ object GameMap {
     }
 
     fun getTileInWorldCoord(x: Float, y: Float): MapTile {
-        return getTile((x / tileSize).toInt(), (y / tileSize).toInt())
+        return getTile(MathUtils.clamp((x / tileSize).toInt(), 0, w), MathUtils.clamp((y / tileSize).toInt(), 0, h))
     }
 
     fun removeElement(x: Int, y: Int, mapElement: MapElement) {
