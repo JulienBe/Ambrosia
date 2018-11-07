@@ -42,7 +42,7 @@ object GameMap {
 
     fun getTile(x: Int, y: Int): MapTile {
 //        return map.get(x * h + y % h)
-        return map.get(MathUtils.clamp(x, 0, w) * w + MathUtils.clamp(y, 0, h))
+        return map.get(MathUtils.clamp(x, 0, w - 1) * w + MathUtils.clamp(y, 0, h - 1))
     }
 
     fun getX(index: Int): Int {

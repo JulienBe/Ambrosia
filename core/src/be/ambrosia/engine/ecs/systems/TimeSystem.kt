@@ -14,6 +14,8 @@ class TimeSystem : IteratingSystem(family) {
         e.total += e.delta
         e.timers.forEach {
             it.value.current += e.delta
+            if (it.value.current > it.value.nextTrigger)
+                it.value.onTrigger.invoke(entity)
         }
     }
 

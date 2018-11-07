@@ -23,6 +23,8 @@ class ControlSystem : IteratingSystem(family) {
         if (checkKeys(control.up))
             dir.addY(1f)
         dir.setDirLength(1f * dir.maxSpeed)
+        if (Gdx.input.justTouched())
+            control.onClick.invoke()
     }
 
     fun checkKeys(keys: List<Int>): Boolean {

@@ -2,10 +2,10 @@ package be.ambrosia.getlost.templates
 
 import be.ambrosia.engine.AmbContext
 import be.ambrosia.engine.AssMan
+import be.ambrosia.engine.Timer
 import be.ambrosia.engine.ecs.ECSEngine
 import be.ambrosia.engine.ecs.components.*
 import be.ambrosia.engine.ecs.systems.CollisionSystem
-import be.ambrosia.engine.g.GInput
 import be.ambrosia.engine.map.MapElement
 import be.ambrosia.engine.map.elements.Wall
 import be.ambrosia.engine.particles.Particle
@@ -15,43 +15,49 @@ import be.ambrosia.getlost.Ids
 import be.ambrosia.getlost.Layers
 import com.badlogic.ashley.core.Entity
 
-object Player {
+object PlayerShot {
 
     val assMan: AssMan = AmbContext.cxt.inject()
 
-    fun init(entity: Entity): Entity {
+    fun init(entity: Entity, posX: Float, posY: Float, dirX: Float, dirY: Float): Entity {
         val pos = ECSEngine.createComponent(PosComp::class.java)
         val dir = ECSEngine.createComponent(DirComp::class.java)
         val dim = ECSEngine.createComponent(DimComp::class.java)
         val time = ECSEngine.createComponent(TimeComp::class.java)
         val draw = ECSEngine.createComponent(Drawable2DComp::class.java)
-        val control = ECSEngine.createComponent(ControlComp::class.java)
         val emitter = ECSEngine.createComponent(ParticleEmitter::class.java)
         val collider = ECSEngine.createComponent(ColliderComp::class.java)
 
-        collider.pushBack = true
+        collider.pushBack = false
         collider.tileElementColliding.add(MapElement.wall)
         collider.collidingTile = {entity, mapTile, mapElement ->
             if (mapElement is Wall)
                 CollisionSystem.wallCollision(PosComp.mapper.get(entity), DirComp.mapper.get(entity), DimComp.mapper.get(entity), mapElement, mapTile)
         }
+        collider.id = Ids.playerShot
         collider.collidingWith = Ids.cyclop
-        collider.id = Ids.player
 
-        dim.set(Cst.Player.w, Cst.Player.w)
-        dir.setSpeed(Cst.Player.speed, Cst.Player.speed)
+        dim.set(Cst.PlayerShot.w, Cst.PlayerShot.w)
+        dir.setDir(dirX, dirY)
+        dir.setDirLength(Cst.PlayerShot.speed)
+        dir.setSpeed(Cst.PlayerShot.speed, Cst.PlayerShot.speed)
 
-        pos.z = Layers.player
+        pos.x = posX
+        pos.y = posY
+        pos.z = Layers.playerShot
+
         draw.batch = AmbContext.cxt.inject()
-        draw.tr = assMan.textureRegions[Cst.Player.tr]
+        draw.tr = assMan.textureRegions[Cst.PlayerShot.tr]
 
-        control.onClick = {
-            ECSEngine.addEntity(
-                PlayerShot.init(ECSEngine.createEntity(), pos.x, pos.y, GInput.clicX() - pos.x, GInput.clicY() - pos.y)
-            )
+        val timer = Timer.obtain()
+        timer.nextTrigger = Cst.PlayerShot.ttl
+        timer.onTrigger = { entity ->
+            ECSEngine.removeEntity(entity)
+            true
         }
+        time.timers.put("bardaf (ttl)", timer)
 
-        entity.add(pos).add(dir).add(dim).add(time).add(draw).add(control).add(emitter).add(collider)
+        entity.add(pos).add(dir).add(dim).add(time).add(draw).add(emitter).add(collider)
         return entity
     }
 

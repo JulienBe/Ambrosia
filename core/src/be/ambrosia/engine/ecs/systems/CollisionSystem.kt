@@ -28,8 +28,10 @@ class CollisionSystem : IteratingSystem(family) {
         val nextIndex = entities.indexOf(entity, true) + 1
         for (i in nextIndex until entities.size()) {
             val other = entities[i]
-            if (rect.overlaps(getRect(posMapper.get(other), dimMapper.get(other), colliderMapper.get(other).rectangle))) {
-                colliderMapper.get(other).collidesWith(other, entity)
+            val otherCollider = colliderMapper.get(other)
+            if ((collider.collidingWith and otherCollider.id != 0 || otherCollider.collidingWith and collider.id != 0) &&
+                    rect.overlaps(getRect(posMapper.get(other), dimMapper.get(other), otherCollider.rectangle))) {
+                otherCollider.collidesWith(other, entity)
                 collider.collidesWith(entity, other)
                 if (collider.pushBack)
                     pushBack(pos,                   posMapper.get(other).x, posMapper.get(other).y, dim)

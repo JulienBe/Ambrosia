@@ -22,6 +22,8 @@ class ControlComp : TemplateComp {
             Input.Keys.S,
             Input.Keys.DOWN
     )
+    var onClick: () -> Unit = {}
+
     companion object {
         val mapper = mapperFor<ControlComp>()
     }

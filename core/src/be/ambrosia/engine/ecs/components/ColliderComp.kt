@@ -9,9 +9,11 @@ import ktx.collections.GdxArray
 
 class ColliderComp : TemplateComp {
 
+    var id = 0
     var pushBack = true
     var pushBounce = true
     val tileElementColliding = GdxArray<Int>()
+    var collidingWith = 0
 
     var colliding: (Entity, Entity) -> Unit = {
         me, other ->
