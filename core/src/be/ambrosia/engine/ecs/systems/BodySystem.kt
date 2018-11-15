@@ -1,6 +1,7 @@
 package be.ambrosia.engine.ecs.systems
 
 import be.ambrosia.engine.ecs.components.*
+import be.ambrosia.engine.g.GBench
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IteratingSystem
@@ -17,13 +18,12 @@ class BodySystem : IteratingSystem(family) {
     }
 
     companion object {
+        val bench = GBench("body")
         val posMapper = PosComp.mapper
         val dirMapper = BodyComp.mapper
-        val dimMapper = DimComp.mapper
 
         val family: Family = allOf(
                 PosComp::class,
-                DimComp::class,
                 BodyComp::class).get()
     }
 }

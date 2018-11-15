@@ -1,103 +1,113 @@
 package be.ambrosia.engine.ecs.systems
 
-import be.ambrosia.engine.ecs.ECSEngine
+import be.ambrosia.engine.AmbContext
 import be.ambrosia.engine.ecs.components.*
-import be.ambrosia.engine.g.GSide
-import be.ambrosia.engine.map.GameMap
+import be.ambrosia.engine.g.GBench
+import be.ambrosia.engine.g.GRand
+import be.ambrosia.engine.g.collisions.GSide
 import be.ambrosia.engine.map.MapTile
 import be.ambrosia.engine.map.elements.Wall
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
+import com.badlogic.ashley.systems.IntervalIteratingSystem
 import com.badlogic.ashley.systems.IteratingSystem
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import ktx.ashley.allOf
+import ktx.ashley.has
 import ktx.collections.GdxSet
 import ktx.collections.contains
 
-class CollisionSystem : IteratingSystem(family) {
+class CollisionSystem : IntervalIteratingSystem(family, 0.045f) {
 
-    val tileSet = GdxSet<MapTile>()
-
-    override fun processEntity(entity: Entity, deltaTime: Float) {
+    override fun processEntity(entity: Entity) {
+        bench.begin()
         val pos = posMapper.get(entity)
-        val dim = dimMapper.get(entity)
-        val rect = getRect(pos, dimMapper.get(entity), rect)
-        val entities = ECSEngine.getEntitiesFor(family)
+        val rect = getRect(pos, rect)
         val collider = colliderMapper.get(entity)
-        val nextIndex = entities.indexOf(entity, true) + 1
-        for (i in nextIndex until entities.size()) {
-            val other = entities[i]
-            val otherCollider = colliderMapper.get(other)
-            if ((collider.collidingWith and otherCollider.id != 0 || otherCollider.collidingWith and collider.id != 0) &&
-                    rect.overlaps(getRect(posMapper.get(other), dimMapper.get(other), otherCollider.rectangle))) {
-                otherCollider.collidesWith(other, entity)
-                collider.collidesWith(entity, other)
-                if (collider.pushBack)
-                    pushBack(pos,                   posMapper.get(other).x, posMapper.get(other).y, dim)
-                    pushBack(posMapper.get(other),  pos.x,                  pos.y,                  dimMapper.get(other))
-                if (collider.pushBounce) {
-                    pushBounce(entity, other)
-                    pushBounce(other, entity)
+        pos.tileSet
+                .onEach { tile ->
+                    tile.elements.forEach {
+                        if (collider.tileElementColliding.contains(it.index))
+                            collider.collidingTile(entity, tile, it)
+                    }
+                    tile.entities.remove(entity)
                 }
-            }
-
-        }
-        tileSet.clear()
-        tileSet.add(GameMap.getTileInWorldCoord(pos.x,          pos.y))
-        tileSet.add(GameMap.getTileInWorldCoord(pos.x + dim.w,  pos.y))
-        tileSet.add(GameMap.getTileInWorldCoord(pos.x + dim.w,  pos.y + dim.h))
-        tileSet.add(GameMap.getTileInWorldCoord(pos.x,          pos.y + dim.h))
-        tileSet.forEach { tile ->
-            tile.elements.forEach {
-                if (collider.tileElementColliding.contains(it.index))
-                    collider.collidingTile(entity, tile, it)
-            }
-        }
+                .flatMap { it.entities }
+                .filter { isColliding(entity, collider, rect, it, colliderMapper.get(it)) }
+                .distinct()
+                .forEach { other ->
+                    val otherCollider = colliderMapper[other]
+                    val otherPos = posMapper[other]
+                    otherCollider.collidesWith(other, entity)
+                    collider.collidesWith(entity, other)
+                    // TODO check those
+                    if (collider.pushBack)
+                        pushBack(pos, otherPos.x, otherPos.y, pushBackStrength)
+                    if (otherCollider.pushBack)
+                        pushBack(otherPos, pos.x, pos.y, pushBackStrength)
+                    if (collider.pushBounce)
+                        pushBounce(entity, other)
+                    if (otherCollider.pushBounce)
+                        pushBounce(other, entity)
+                }
+        bench.end()
     }
 
-    private fun getRect(p: PosComp, d: DimComp, r: Rectangle): Rectangle {
-        r.set(p.x, p.y, d.w, d.h)
+    private fun isColliding(me: Entity, collider: ColliderComp, rect: Rectangle, other: Entity, otherCollider: ColliderComp): Boolean {
+        return me != other &&
+                rect.overlaps(getRect(posMapper.get(other), otherCollider.rectangle)) &&
+                (collider.collidingWith and otherCollider.id != 0 || otherCollider.collidingWith and collider.id != 0)
+    }
+
+    private fun getRect(p: PosComp, r: Rectangle): Rectangle {
+        r.set(p.x, p.y, p.w, p.h)
         return r
     }
 
     companion object {
+        val bench = GBench("coll sys")
         val posMapper = PosComp.mapper
-        val dimMapper = DimComp.mapper
         val colliderMapper = ColliderComp.mapper
         val rect = Rectangle()
-        val v2 = Vector2()
-        val pushBackStrength = 0.1f
+        private val v2 = Vector2()
+        const val pushBackStrength = 0.1f
 
         val family: Family = allOf(
                 PosComp::class,
-                DimComp::class,
                 ColliderComp::class).get()
 
         fun pushBounce(me: Entity, other: Entity) {
-            val meDir = DirComp.mapper.get(me)
-            val otherDir = DirComp.mapper.get(other)
-            meDir.setDir(otherDir.previousDir.x, otherDir.previousDir.y)
+            if (other.has(DirComp.mapper) && me.has(DirComp.mapper)) {
+                val otherDir = DirComp.mapper.get(other)
+                DirComp.mapper.get(me).setDir(otherDir.previousDir.x, otherDir.previousDir.y)
+            }
         }
 
-        fun pushBack(mePos: PosComp, otherX: Float, otherY: Float, meDim: DimComp) {
-            val dep = v2.set(mePos.x - otherX, mePos.y - otherY)
-            dep.setLength(meDim.w + meDim.h / dep.len())
-            dep.scl(pushBackStrength)
-            mePos.x += dep.x
-            mePos.y += dep.y
+        fun pushBack(mePos: PosComp, otherX: Float, otherY: Float, pushBackStrength: Float) {
+            v2.set(mePos.x - otherX, mePos.y - otherY)
+              .setLength((mePos.w + mePos.h / v2.len()) * pushBackStrength)
+            mePos.x += v2.x
+            mePos.y += v2.y
         }
 
-        fun wallCollision(pos: PosComp, dir: DirComp, dim: DimComp, wall: Wall, tile: MapTile) {
+        fun goTowards(mePos: PosComp, otherX: Float, otherY: Float, meDir: DirComp, strenght: Float) {
+            v2.set(mePos.x - otherX, mePos.y - otherY)
+              .setLength((mePos.w + mePos.h / v2.len()) * strenght)
+            meDir.addX(v2.x)
+            meDir.addY(v2.y)
+        }
+
+        fun wallCollision(pos: PosComp, dir: DirComp, wall: Wall, tile: MapTile) {
             if (wall.exposedSide.bounceV.x != 0f)
                 dir.setDir(Math.abs(dir.dirX) * wall.exposedSide.bounceV.x, dir.dirY)
             if (wall.exposedSide.bounceV.y != 0f)
                 dir.setDir(dir.dirX, Math.abs(dir.dirY) * wall.exposedSide.bounceV.y)
-//            pushBack(pos, pos.x - wall.exposedSide.bounceV.x, pos.y - wall.exposedSide.bounceV.y, dim)
             when (wall.exposedSide) {
                 GSide.LEFT -> {
                     dir.setDir(Math.abs(dir.dirX) * wall.exposedSide.bounceV.x, dir.dirY)
-                    pos.x = tile.worldX - dim.w
+                    pos.x = tile.worldX - pos.w
                 }
                 GSide.RIGHT -> {
                     dir.setDir(Math.abs(dir.dirX) * wall.exposedSide.bounceV.x, dir.dirY)
@@ -109,11 +119,20 @@ class CollisionSystem : IteratingSystem(family) {
                 }
                 GSide.BOTTOM -> {
                     dir.setDir(dir.dirX, Math.abs(dir.dirY) * wall.exposedSide.bounceV.y)
-                    pos.y = tile.worldY - dim.h
+                    pos.y = tile.worldY - pos.h
                 }
             }
         }
 
+        fun wallCollision(pos: PosComp, wall: Wall, tile: MapTile) {
+            when (wall.exposedSide) {
+                GSide.LEFT ->   pos.x = tile.worldX - pos.w
+                GSide.RIGHT ->  pos.x = tile.worldRight
+                GSide.TOP ->    pos.y = tile.worldUp
+                GSide.BOTTOM -> pos.y = tile.worldY - pos.h
+            }
+
+        }
         private fun actOnSide(side: GSide, dir: DirComp): GSide {
             when (side) {
                 GSide.BOTTOM -> dir.setDir(dir.dirX, -Math.abs(dir.dirY))

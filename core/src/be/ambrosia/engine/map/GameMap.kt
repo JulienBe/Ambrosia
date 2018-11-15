@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.MathUtils
 import ktx.collections.GdxArray
 
 object GameMap {
-    val map = GdxArray<MapTile>(true, 32)
+    val map = GdxArray<MapTile>(true, 1200)
     var tileSize = Dimensions.pixel * 25f
     var tileHalfSize = tileSize / 2f
     var w = 0
@@ -21,11 +21,6 @@ object GameMap {
                 t.set(x, y)
                 map.add(t)
             }
-//        0 -> 0 0
-//        1 -> 0 1
-//        2 -> 1 0
-//        3 -> 1 1
-//        4 -> 2 0
     }
 
     fun addElement(x1: Int, y1: Int, x2: Int, y2: Int, element: MapElement) {
@@ -65,6 +60,10 @@ object GameMap {
 
     fun removeElement(x: Int, y: Int, mapElement: MapElement) {
         getTile(x, y).elements.removeValue(mapElement, true)
+    }
+
+    fun clearEntitesOnTiles() {
+        map.forEach { it.entities.clear() }
     }
 
 }

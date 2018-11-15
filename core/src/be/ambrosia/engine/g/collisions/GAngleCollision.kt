@@ -1,4 +1,4 @@
-package be.ambrosia.engine.g
+package be.ambrosia.engine.g.collisions
 
 class GAngleCollision(first: Float, second: Float, val side: GSide) {
     val max = Math.max(first, second)

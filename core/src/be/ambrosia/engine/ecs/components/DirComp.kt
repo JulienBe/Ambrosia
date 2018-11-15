@@ -1,6 +1,7 @@
 package be.ambrosia.engine.ecs.components
 
 import be.ambrosia.engine.Dimensions
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import ktx.ashley.mapperFor
 
@@ -11,6 +12,10 @@ class DirComp(var minSpeed: Float = 0f, var maxSpeed: Float = 2000f) : TemplateC
 
     val dirX: Float get() = dir.x
     val dirY: Float get() = dir.y
+
+    fun clampSpeed(min: Float, max: Float) {
+        dir.setLength(MathUtils.clamp(dir.len(), min, max))
+    }
 
     fun validate() {
         previousDir.x = dir.x
@@ -37,6 +42,12 @@ class DirComp(var minSpeed: Float = 0f, var maxSpeed: Float = 2000f) : TemplateC
 
     fun setDirLength(l: Float) {
         dir.setLength(l)
+    }
+
+    override fun reset() {
+        super.reset()
+        dir.set(0f, 0f)
+        previousDir.set(0f, 0f)
     }
 
     companion object {

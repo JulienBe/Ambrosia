@@ -1,6 +1,6 @@
 package be.ambrosia.engine.map.elements
 
-import be.ambrosia.engine.g.GSide
+import be.ambrosia.engine.g.collisions.GSide
 import be.ambrosia.engine.map.MapElement
 import com.badlogic.gdx.utils.Pool
 

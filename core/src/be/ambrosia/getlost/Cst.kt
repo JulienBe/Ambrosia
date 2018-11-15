@@ -9,12 +9,14 @@ object Cst {
         val tr = "debris"
     }
     object Cyclop {
-        var w = Dimensions.pixel * 5
+        var w = Dimensions.pixel * 8
         var hw = w / 2f
         var wandererAmplitude = Dimensions.pixel * 5
         val minSpeed = 0f
-        var maxSpeed = Player.speed
+        var maxSpeed = Player.speed / 2f
         val tr = "debris"
+        val sensorRadius = 100f
+        val sensorPush = 0.5f
     }
     object PlayerShot {
         var w = Dimensions.pixel * 10
@@ -22,5 +24,10 @@ object Cst {
         var speed = Dimensions.pixel * 800
         val tr = "debris"
         const val ttl = 3f
+    }
+    object Energy {
+        var w = Dimensions.pixel * 5
+        var hw = w / 2f
+        val tr = "debris"
     }
 }

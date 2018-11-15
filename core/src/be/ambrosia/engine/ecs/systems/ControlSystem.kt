@@ -2,6 +2,7 @@ package be.ambrosia.engine.ecs.systems
 
 import be.ambrosia.engine.ecs.components.ControlComp
 import be.ambrosia.engine.ecs.components.DirComp
+import be.ambrosia.engine.g.GBench
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IteratingSystem
@@ -38,6 +39,7 @@ class ControlSystem : IteratingSystem(family) {
     companion object {
         val controlMapper = ControlComp.mapper
         val dirMapper = DirComp.mapper
+        val bench = GBench("control")
 
         val family: Family = allOf(
                 DirComp::class,

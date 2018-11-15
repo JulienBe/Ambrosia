@@ -5,6 +5,7 @@ import be.ambrosia.engine.ecs.components.DirComp
 import be.ambrosia.engine.ecs.components.PosComp
 import be.ambrosia.engine.ecs.components.TimeComp
 import be.ambrosia.engine.ecs.components.WandererComp
+import be.ambrosia.engine.g.GBench
 import be.ambrosia.engine.g.GRand
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
@@ -25,6 +26,7 @@ class WandererSystem : IteratingSystem(family) {
     }
 
     companion object {
+        val bench = GBench("wanderer")
         val wandererMapper = WandererComp.mapper
         val dirMapper = DirComp.mapper
         val timeMapper = TimeComp.mapper

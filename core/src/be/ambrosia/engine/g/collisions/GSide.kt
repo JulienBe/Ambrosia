@@ -1,4 +1,4 @@
-package be.ambrosia.engine.g
+package be.ambrosia.engine.g.collisions
 
 import com.badlogic.gdx.math.Vector2
 

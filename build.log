@@ -9,3 +9,4 @@
 # CODE collide with player and only reproduce between cyclops : 18/11/04 : 1-00
 # CODE layer collision : 18/11/07 : 0-15
 # CODE player shot : 18/11/07 : 0-15
+# CODE optimize collision a bit : 18/11/15 : 8-00
