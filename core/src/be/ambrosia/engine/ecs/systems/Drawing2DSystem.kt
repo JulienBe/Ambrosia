@@ -12,14 +12,13 @@ import java.util.*
 
 class Drawing2DSystem : SortedIteratingSystem(family, ZComparator()) {
 
-
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        bench.begin()
+//        bench.begin()
         val pos = pos.get(entity)
         val d = drawable.get(entity)
         d.batch.setColor(d.color)
         d.batch.draw(d.tr, pos.x, pos.y, pos.w, pos.h)
-        bench.end()
+//        bench.end()
     }
 
     private class ZComparator : Comparator<Entity> {

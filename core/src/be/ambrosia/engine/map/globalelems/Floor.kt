@@ -1,4 +1,4 @@
-package be.ambrosia.engine.map.elements
+package be.ambrosia.engine.map.globalelems
 
 import be.ambrosia.engine.map.MapElement
 

@@ -25,8 +25,10 @@ class GetLost : KtxGame<Screen>() {
         ECSEngine.addSystem(SpawnSystem())
         ECSEngine.addSystem(BodySystem())
 
-        addScreen(Benchmark())
-        setScreen<Benchmark>()
+        addScreen(Main())
+        setScreen<Main>()
+//        addScreen(Benchmark())
+//        setScreen<Benchmark>()
     }
 
 }

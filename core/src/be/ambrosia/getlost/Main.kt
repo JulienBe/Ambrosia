@@ -4,9 +4,9 @@ import be.ambrosia.engine.AmbContext
 import be.ambrosia.engine.B2DGears
 import be.ambrosia.engine.ecs.ECSEngine
 import be.ambrosia.engine.g.GBatch
-import be.ambrosia.engine.g.GBench
+import be.ambrosia.engine.g.GTime
 import be.ambrosia.engine.map.GameMap
-import be.ambrosia.engine.map.elements.Wall
+import be.ambrosia.getlost.map.MapElements
 import be.ambrosia.getlost.templates.CyclopSpwaner
 import be.ambrosia.getlost.templates.Player
 import com.badlogic.gdx.Gdx
@@ -36,7 +36,9 @@ class Main : KtxScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
         cam.update()
         b.projectionMatrix = cam.combined
+        GTime.majDeltas(delta, delta)
 //        b3D.begin(cam)
+        b.begin()
         GameMap.draw(b)
         GameMap.clearEntitesOnTiles()
         ECSEngine.update(Gdx.graphics.deltaTime)

@@ -1,15 +1,12 @@
 package be.ambrosia.getlost
 
 import be.ambrosia.engine.AmbContext
-import be.ambrosia.engine.Dimensions
 import be.ambrosia.engine.ecs.ECSEngine
-import be.ambrosia.engine.ecs.systems.Drawing2DSystem
-import be.ambrosia.engine.ecs.systems.Drawing3DSystem
 import be.ambrosia.engine.g.GBatch
 import be.ambrosia.engine.g.GRand
 import be.ambrosia.engine.map.GameMap
+import be.ambrosia.getlost.map.MapElements
 import be.ambrosia.getlost.templates.Cyclop
-import be.ambrosia.getlost.templates.Energy
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera

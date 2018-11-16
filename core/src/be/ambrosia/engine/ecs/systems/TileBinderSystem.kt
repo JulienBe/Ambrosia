@@ -8,7 +8,7 @@ import com.badlogic.ashley.systems.IteratingSystem
 class TileBinderSystem : IteratingSystem(CollisionSystem.family)  {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        bench.begin()
+//        bench.begin()
         val pos = CollisionSystem.posMapper.get(entity)
         // TODO : be careful, it only takes each corner
         pos.tileSet.clear()
@@ -22,7 +22,7 @@ class TileBinderSystem : IteratingSystem(CollisionSystem.family)  {
         pos.tileSet.add(GameMap.getTileInWorldCoord(pos.x + pos.w,  pos.y).addEntity(entity))
         pos.tileSet.add(GameMap.getTileInWorldCoord(pos.x + pos.w,  pos.y + pos.h).addEntity(entity))
         pos.tileSet.add(GameMap.getTileInWorldCoord(pos.x,          pos.y + pos.h).addEntity(entity))
-        bench.end()
+//        bench.end()
     }
 
     companion object {

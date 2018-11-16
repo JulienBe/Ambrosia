@@ -13,14 +13,14 @@ class MovementSystem : IteratingSystem(family) {
 
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        bench.begin()
+//        bench.begin()
         val pos = posMapper.get(entity)
         val dir = dirMapper.get(entity)
         val time = timeMapper.get(entity)
         pos.x += dir.dirX * time.delta
         pos.y += dir.dirY * time.delta
         dir.validate()
-        bench.end()
+//        bench.end()
     }
 
     companion object {

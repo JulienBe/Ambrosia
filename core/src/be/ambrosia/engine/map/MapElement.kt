@@ -2,20 +2,21 @@ package be.ambrosia.engine.map
 
 import be.ambrosia.engine.g.GBatch
 
-abstract class MapElement(val index : Int) {
+abstract class MapElement(val id: Int) {
 
-    open var draw: (GBatch, x: Int, y: Int) -> Unit = {gBatch, x, y ->  }
+    lateinit var tile: MapTile
+    open var draw: (GBatch) -> Unit = {gBatch ->  }
 
-    fun setDraw(kFunction3: (GBatch, Int, Int) -> Unit): MapElement {
-        this.draw = kFunction3
+    fun setDraw(kFunction: (GBatch) -> Unit): MapElement {
+        this.draw = kFunction
         return this
     }
 
 
     companion object {
-        val empty = 0
-        val floor = 1
-        val wall = 2
+        const val empty = 0
+        const val floor = 1
+        const val wall = 2
     }
 
 }

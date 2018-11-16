@@ -7,7 +7,7 @@ import be.ambrosia.engine.ecs.components.*
 import be.ambrosia.engine.ecs.systems.CollisionSystem
 import be.ambrosia.engine.g.GInput
 import be.ambrosia.engine.map.MapElement
-import be.ambrosia.engine.map.elements.Wall
+import be.ambrosia.engine.map.globalelems.Wall
 import be.ambrosia.engine.particles.Particle
 import be.ambrosia.engine.particles.Particle3D
 import be.ambrosia.getlost.Cst
@@ -29,7 +29,7 @@ object Player {
         val collider = ECSEngine.createComponent(ColliderComp::class.java)
 
         collider.pushBack = true
-        collider.tileElementColliding.add(MapElement.wall)
+        collider.collidingWithTiles = MapElement.wall
         collider.collidingTile = {entity, mapTile, mapElement ->
             if (mapElement is Wall)
                 CollisionSystem.wallCollision(PosComp.mapper.get(entity), DirComp.mapper.get(entity), mapElement, mapTile)

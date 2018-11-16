@@ -12,7 +12,7 @@ class ColliderComp : TemplateComp {
     var id = 0
     var pushBack = true
     var pushBounce = true
-    val tileElementColliding = GdxArray<Int>()
+    var collidingWithTiles = 0
     var collidingWith = 0
 
     var colliding: (Entity, Entity) -> Unit = {
@@ -34,7 +34,7 @@ class ColliderComp : TemplateComp {
         collidingTile = {
             entity, mapTile, mapElement ->
         }
-        tileElementColliding.clear()
+        collidingWithTiles = 0
     }
 
     companion object {

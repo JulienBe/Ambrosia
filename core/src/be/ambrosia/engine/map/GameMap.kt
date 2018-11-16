@@ -23,6 +23,18 @@ object GameMap {
             }
     }
 
+    fun addElement(x1: Int, y1: Int, x2: Int, y2: Int, obtain: (x: Int, y: Int) -> MapElement) {
+        val beginX = Math.min(x1, x2)
+        val endX = Math.max(x1, x2)
+        val beginY = Math.min(y1, y2)
+        val endY = Math.max(y1, y2)
+
+        for (x in beginX..endX)
+            for (y in beginY..endY) {
+                getTile(x, y).addElement(obtain.invoke(x, y))
+            }
+    }
+
     fun addElement(x1: Int, y1: Int, x2: Int, y2: Int, element: MapElement) {
         val beginX = Math.min(x1, x2)
         val endX = Math.max(x1, x2)
@@ -31,7 +43,7 @@ object GameMap {
 
         for (x in beginX..endX)
             for (y in beginY..endY) {
-                getTile(x, y).elements.add(element)
+                getTile(x, y).addElement(element)
             }
     }
 
@@ -59,7 +71,7 @@ object GameMap {
     }
 
     fun removeElement(x: Int, y: Int, mapElement: MapElement) {
-        getTile(x, y).elements.removeValue(mapElement, true)
+        getTile(x, y).removeElement(mapElement)
     }
 
     fun clearEntitesOnTiles() {

@@ -1,35 +1,32 @@
 package be.ambrosia.engine.ecs.systems
 
-import be.ambrosia.engine.AmbContext
-import be.ambrosia.engine.ecs.components.*
+import be.ambrosia.engine.ecs.components.ColliderComp
+import be.ambrosia.engine.ecs.components.DirComp
+import be.ambrosia.engine.ecs.components.PosComp
 import be.ambrosia.engine.g.GBench
-import be.ambrosia.engine.g.GRand
 import be.ambrosia.engine.g.collisions.GSide
 import be.ambrosia.engine.map.MapTile
-import be.ambrosia.engine.map.elements.Wall
+import be.ambrosia.engine.map.globalelems.Wall
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IntervalIteratingSystem
-import com.badlogic.ashley.systems.IteratingSystem
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import ktx.ashley.allOf
 import ktx.ashley.has
-import ktx.collections.GdxSet
 import ktx.collections.contains
 
 class CollisionSystem : IntervalIteratingSystem(family, 0.045f) {
 
     override fun processEntity(entity: Entity) {
-        bench.begin()
+//        bench.begin()
         val pos = posMapper.get(entity)
         val rect = getRect(pos, rect)
         val collider = colliderMapper.get(entity)
         pos.tileSet
                 .onEach { tile ->
-                    tile.elements.forEach {
-                        if (collider.tileElementColliding.contains(it.index))
+                    tile.getElements().forEach {
+                        if (collider.collidingWithTiles and it.id != 0)
                             collider.collidingTile(entity, tile, it)
                     }
                     tile.entities.remove(entity)
@@ -52,7 +49,7 @@ class CollisionSystem : IntervalIteratingSystem(family, 0.045f) {
                     if (otherCollider.pushBounce)
                         pushBounce(other, entity)
                 }
-        bench.end()
+//        bench.end()
     }
 
     private fun isColliding(me: Entity, collider: ColliderComp, rect: Rectangle, other: Entity, otherCollider: ColliderComp): Boolean {
@@ -94,7 +91,8 @@ class CollisionSystem : IntervalIteratingSystem(family, 0.045f) {
 
         fun goTowards(mePos: PosComp, otherX: Float, otherY: Float, meDir: DirComp, strenght: Float) {
             v2.set(mePos.x - otherX, mePos.y - otherY)
-              .setLength((mePos.w + mePos.h / v2.len()) * strenght)
+            v2.setLength((mePos.w + mePos.h / v2.len()))
+            v2.scl(strenght)
             meDir.addX(v2.x)
             meDir.addY(v2.y)
         }

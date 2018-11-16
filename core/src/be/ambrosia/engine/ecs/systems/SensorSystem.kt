@@ -3,16 +3,16 @@ package be.ambrosia.engine.ecs.systems
 import be.ambrosia.engine.ecs.ECSEngine
 import be.ambrosia.engine.ecs.components.*
 import be.ambrosia.engine.g.GBench
+import be.ambrosia.engine.map.GameMap
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
-import com.badlogic.ashley.systems.IteratingSystem
-import com.badlogic.gdx.math.Rectangle
+import com.badlogic.ashley.systems.IntervalIteratingSystem
 import ktx.ashley.allOf
 
-class SensorSystem : IteratingSystem(family) {
+class SensorSystem : IntervalIteratingSystem(family, 0.5f) {
 
-    override fun processEntity(entity: Entity, deltaTime: Float) {
-        bench.begin()
+    override fun processEntity(entity: Entity) {
+//        bench.begin()
         val pos = posMapper.get(entity)
         val canBeSensed = ECSEngine.getEntitiesFor(canBeSensed)
         val sensor = sensorMapper.get(entity)
@@ -28,7 +28,15 @@ class SensorSystem : IteratingSystem(family) {
                 sensor.sensing(entity, it)
             }
         }
-        bench.end()
+        val sensingTileElements = GameMap.map.filter {
+            sensor.circle.contains(it.worldCenterX, it.worldCenterY) && sensor.collidingWithTiles and it.elementMask != 0
+        }.flatMap {
+            it.getElements()
+        }.filter {
+            it.id and sensor.collidingWithTiles != 0
+        }
+        sensor.sensingTiles(entity, sensingTileElements)
+//        bench.end()
     }
 
     companion object {

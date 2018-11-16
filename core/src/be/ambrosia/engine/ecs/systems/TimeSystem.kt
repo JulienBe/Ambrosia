@@ -10,7 +10,7 @@ import ktx.ashley.allOf
 class TimeSystem : IteratingSystem(family) {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        bench.begin()
+//        bench.begin()
         val e = time.get(entity)
         e.delta = deltaTime
         e.total += e.delta
@@ -19,7 +19,7 @@ class TimeSystem : IteratingSystem(family) {
             if (it.value.current > it.value.nextTrigger)
                 it.value.onTrigger.invoke(entity)
         }
-        bench.end()
+//        bench.end()
     }
 
     companion object {

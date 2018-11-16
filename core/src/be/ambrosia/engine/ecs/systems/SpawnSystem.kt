@@ -12,14 +12,14 @@ import ktx.ashley.allOf
 class SpawnSystem : IteratingSystem(family) {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        bench.begin()
+//        bench.begin()
         val spawn = timedSpawnMapper.get(entity)
         val time = timeMapper.get(entity)
         if (spawn.nextSpawn < time.total) {
             spawn.nextSpawn = time.total + spawn.nextSpawnDelay.invoke()
             ECSEngine.addEntity(spawn.spawn.invoke())
         }
-        bench.end()
+//        bench.end()
     }
 
     companion object {

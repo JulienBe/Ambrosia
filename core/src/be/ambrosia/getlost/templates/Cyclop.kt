@@ -8,11 +8,13 @@ import be.ambrosia.engine.ecs.components.*
 import be.ambrosia.engine.ecs.systems.CollisionSystem
 import be.ambrosia.engine.g.GColor
 import be.ambrosia.engine.map.MapElement
-import be.ambrosia.engine.map.elements.Wall
+import be.ambrosia.engine.map.globalelems.Wall
 import be.ambrosia.engine.particles.Particle
 import be.ambrosia.engine.particles.Particle3D
 import be.ambrosia.getlost.Cst
 import be.ambrosia.getlost.Ids
+import be.ambrosia.getlost.components.EnergyConsummerComp
+import be.ambrosia.getlost.map.Energy
 import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.math.Vector2
 
@@ -33,19 +35,27 @@ object Cyclop {
         val body = ECSEngine.createComponent(BodyComp::class.java)
         val closeCollider = ECSEngine.createComponent(ColliderComp::class.java)
         val sensor = ECSEngine.createComponent(SensorComp::class.java)
+        val energyConsummerComp = ECSEngine.createComponent(EnergyConsummerComp::class.java)
 
         closeCollider.collidingWith = Ids.player or Ids.cyclop or Ids.energy
         closeCollider.id = Ids.cyclop
-        closeCollider.tileElementColliding.add(MapElement.wall)
+        closeCollider.collidingWithTiles = MapElement.wall or Energy.energyId
         closeCollider.collidingTile = { entity, mapTile, mapElement ->
-            if (mapElement is Wall) {
-                CollisionSystem.wallCollision(PosComp.mapper.get(entity), DirComp.mapper.get(entity), mapElement, mapTile)
+            when (mapElement) {
+                is Wall -> CollisionSystem.wallCollision(PosComp.mapper.get(entity), DirComp.mapper.get(entity), mapElement, mapTile)
+                is Energy -> {
+                    val consummer = EnergyConsummerComp.mapper[entity]
+                    consummer.energy += 5
+                    mapElement.energy -= 5
+                }
             }
         }
         closeCollider.colliding = ::mating
 
         sensor.circle.setRadius(Cst.Cyclop.sensorRadius)
         sensor.sensing = ::sensor
+        sensor.sensingTiles = ::sensingTiles
+        sensor.collidingWithTiles = Energy.energyId
 
         time.timers.put(reproduceTimerKey, Timer.obtain())
         wanderer.amplitude = Cst.Cyclop.wandererAmplitude
@@ -60,9 +70,27 @@ object Cyclop {
         draw.tr = assMan.textureRegions[Cst.Cyclop.tr]
         draw.color = GColor.convertARGB(1f, 0.5f, 0.7f, 0.2f)
 
-        entity.add(pos).add(dir).add(time).add(draw).add(emitter).add(wanderer).add(body).add(closeCollider).add(sensor)
+        entity.add(pos).add(dir).add(time).add(draw).add(emitter).add(wanderer).add(body).add(closeCollider).add(sensor).add(energyConsummerComp)
         count++
         return entity
+    }
+
+    fun sensingTiles(me: Entity, sensingTileElements: List<MapElement>) {
+        if (sensingTileElements.isEmpty())
+            return
+        val mePos = PosComp.mapper.get(me)
+        val target = sensingTileElements.filterIsInstance(Energy::class.java).sortedBy {
+            it.energy / Vector2.dst2(mePos.x, mePos.y, it.tile.worldCenterX, it.tile.worldCenterY)
+        }.last()
+        val meDir = DirComp.mapper.get(me)
+        CollisionSystem.goTowards(
+                mePos,
+                target.tile.worldCenterX,
+                target.tile.worldCenterY,
+                meDir,
+                -Cst.Cyclop.sensorPush)
+//            val dst = Vector2.dst(mePos.x, mePos.y, otherPos.x, otherPos.y)
+        meDir.clampSpeed(0f, Cst.Cyclop.maxSpeed)
     }
 
     fun sensor(me: Entity, other: Entity) {
@@ -76,8 +104,8 @@ object Cyclop {
                     otherPos.y + otherPos.hw,
                     meDir,
                     -Cst.Cyclop.sensorPush)
-            val dst = Vector2.dst(mePos.x, mePos.y, otherPos.x, otherPos.y)
-            meDir.clampSpeed(0f, dst)
+//            val dst = Vector2.dst(mePos.x, mePos.y, otherPos.x, otherPos.y)
+            meDir.clampSpeed(0f, Cst.Cyclop.maxSpeed)
         }
     }
 

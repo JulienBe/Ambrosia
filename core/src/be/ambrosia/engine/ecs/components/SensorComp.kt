@@ -12,17 +12,15 @@ class SensorComp : TemplateComp {
 
     var id = 0
     var collidingWith = 0
+    var collidingWithTiles = 0
     var circle = Circle()
 
     var sensing: (Entity, Entity) -> Unit = {
         me, other ->
     }
-
-    var collidingTile: (Entity, MapTile, MapElement) -> Unit = {
-        entity, mapTile, mapElement ->
+    var sensingTiles: (entity: Entity, sensingTileElements: List<MapElement>) -> Unit = {
+        entity, sensingTileElements ->
     }
-
-    val rectangle = Rectangle()
 
     companion object {
         val mapper = mapperFor<SensorComp>()
