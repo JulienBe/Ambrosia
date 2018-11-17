@@ -54,8 +54,9 @@ class MapTile private constructor() {
     }
 
     fun draw(b: GBatch) {
-        for (i in 0 until elements.size) {
-            elements.get(i).draw(b)
+        for (i in elements.size -1 downTo 0) {
+            if (!elements.get(i).draw(b))
+                removeElement(elements[i])
         }
     }
 

@@ -10,6 +10,11 @@ class WandererComp : TemplateComp {
     var nextPush = pushRate
     var amplitude = rand.float(1f, 2f)
 
+    override fun reset() {
+        super.reset()
+        nextPush = 0f
+    }
+
     companion object {
         val mapper = mapperFor<WandererComp>()
         val rand = AmbContext.cxt.inject<GRand>()

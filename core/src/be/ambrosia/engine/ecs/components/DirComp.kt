@@ -16,6 +16,9 @@ class DirComp(var minSpeed: Float = 0f, var maxSpeed: Float = 2000f) : TemplateC
     fun clampSpeed(min: Float, max: Float) {
         dir.setLength(MathUtils.clamp(dir.len(), min, max))
     }
+    fun clampSpeed() {
+        clampSpeed(minSpeed, maxSpeed)
+    }
 
     fun validate() {
         previousDir.x = dir.x
@@ -48,6 +51,12 @@ class DirComp(var minSpeed: Float = 0f, var maxSpeed: Float = 2000f) : TemplateC
         super.reset()
         dir.set(0f, 0f)
         previousDir.set(0f, 0f)
+    }
+
+    fun setDirAndKeepSpeed(x: Float, y: Float) {
+        val pLenght = dir.len()
+        dir.set(x, y)
+        dir.setLength(pLenght)
     }
 
     companion object {

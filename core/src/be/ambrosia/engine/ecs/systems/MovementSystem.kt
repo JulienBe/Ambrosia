@@ -19,6 +19,7 @@ class MovementSystem : IteratingSystem(family) {
         val time = timeMapper.get(entity)
         pos.x += dir.dirX * time.delta
         pos.y += dir.dirY * time.delta
+        dir.clampSpeed()
         dir.validate()
 //        bench.end()
     }

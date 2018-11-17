@@ -5,9 +5,9 @@ import be.ambrosia.engine.g.GBatch
 abstract class MapElement(val id: Int) {
 
     lateinit var tile: MapTile
-    open var draw: (GBatch) -> Unit = {gBatch ->  }
+    open var draw: (GBatch) -> Boolean = {gBatch -> true }
 
-    fun setDraw(kFunction: (GBatch) -> Unit): MapElement {
+    fun setDraw(kFunction: (GBatch) -> Boolean): MapElement {
         this.draw = kFunction
         return this
     }

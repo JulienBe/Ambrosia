@@ -6,6 +6,7 @@ import be.ambrosia.engine.Timer
 import be.ambrosia.engine.ecs.ECSEngine
 import be.ambrosia.engine.ecs.components.*
 import be.ambrosia.engine.ecs.systems.CollisionSystem
+import be.ambrosia.engine.g.GColor
 import be.ambrosia.engine.g.GRand
 import be.ambrosia.engine.map.GameMap
 import be.ambrosia.engine.map.MapElement
@@ -22,15 +23,15 @@ import com.badlogic.ashley.core.Entity
 object PlayerShot {
 
     val assMan: AssMan = AmbContext.cxt.inject()
-    val rand = AmbContext.cxt.inject<GRand>()
+    val tr = assMan.textureRegions[Cst.PlayerShot.tr]
+    val color = GColor.convertARGB(1f, 0.7f, 0.4f, 0.5f)
 
     fun init(entity: Entity, posX: Float, posY: Float, dirX: Float, dirY: Float): Entity {
-        val pos = ECSEngine.createComponent(PosComp::class.java)
-        val dir = ECSEngine.createComponent(DirComp::class.java)
-        val time = ECSEngine.createComponent(TimeComp::class.java)
-        val draw = ECSEngine.createComponent(Drawable2DComp::class.java)
-        val emitter = ECSEngine.createComponent(ParticleEmitter::class.java)
-        val collider = ECSEngine.createComponent(ColliderComp::class.java)
+        val pos = ECSEngine.createComponent(PosComp::class.java, entity)
+        val dir = ECSEngine.createComponent(DirComp::class.java, entity)
+        val time = ECSEngine.createComponent(TimeComp::class.java, entity)
+        val draw = ECSEngine.createComponent(Drawable2DComp::class.java, entity)
+        val collider = ECSEngine.createComponent(ColliderComp::class.java, entity)
 
         collider.pushBack = false
         collider.collidingWithTiles = MapElement.wall
@@ -50,8 +51,10 @@ object PlayerShot {
         pos.y = posY
         pos.z = Layers.playerShot
 
-        draw.batch = AmbContext.cxt.inject()
-        draw.tr = assMan.textureRegions[Cst.PlayerShot.tr]
+        draw.draw = {
+            it.setColor(color)
+            it.draw(tr, pos.x, pos.y, pos.w, pos.h)
+        }
 
         val timer = Timer.obtain()
         timer.nextTrigger = Cst.PlayerShot.ttl
@@ -64,7 +67,6 @@ object PlayerShot {
         }
         time.timers.put("bardaf (ttl)", timer)
 
-        entity.add(pos).add(dir).add(time).add(draw).add(emitter).add(collider)
         return entity
     }
 

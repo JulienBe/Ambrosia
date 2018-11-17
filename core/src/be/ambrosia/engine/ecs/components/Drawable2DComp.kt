@@ -6,8 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import ktx.ashley.mapperFor
 
 class Drawable2DComp(var color: Float = Color.WHITE.toFloatBits()) : TemplateComp {
-    lateinit var batch: GBatch
-    lateinit var tr: TextureRegion
+    var draw: (GBatch) -> Unit = {}
     companion object {
         val mapper = mapperFor<Drawable2DComp>()
     }

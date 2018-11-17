@@ -37,7 +37,10 @@ object MapElements {
     }
     fun addWall(side: GSide): Wall {
         val wall = Wall.obtain(side)
-        wall.setDraw { b -> wallDraw(b, wall) }
+        wall.setDraw { b ->
+            wallDraw(b, wall)
+            true
+        }
         return wall
     }
 

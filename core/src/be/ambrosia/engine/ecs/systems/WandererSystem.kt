@@ -23,6 +23,7 @@ class WandererSystem : IteratingSystem(family) {
             dir.addX(r.gauss(wanderer.amplitude))
             dir.addY(r.gauss(wanderer.amplitude))
         }
+        dir.clampSpeed()
     }
 
     companion object {

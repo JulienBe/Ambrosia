@@ -33,6 +33,7 @@ class Energy private constructor() : MapElement(energyId) {
             val e = pool.obtain()
             e.setDraw { gBatch ->
                 draw(gBatch, e)
+                e.energy > 0
             }
             e.energy = amount
             return e
