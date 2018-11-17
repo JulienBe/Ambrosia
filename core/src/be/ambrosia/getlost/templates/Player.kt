@@ -5,6 +5,7 @@ import be.ambrosia.engine.AssMan
 import be.ambrosia.engine.ecs.ECSEngine
 import be.ambrosia.engine.ecs.components.*
 import be.ambrosia.engine.ecs.systems.CollisionSystem
+import be.ambrosia.engine.g.GColor
 import be.ambrosia.engine.g.GInput
 import be.ambrosia.engine.map.MapElement
 import be.ambrosia.engine.map.globalelems.Wall
@@ -18,21 +19,22 @@ import com.badlogic.ashley.core.Entity
 object Player {
 
     val assMan: AssMan = AmbContext.cxt.inject()
+    val tr = assMan.textureRegions[Cst.Player.tr]
+    val color = GColor.convertARGB(1f, 0.5f, 0.5f, 0.5f)
 
     fun init(entity: Entity): Entity {
-        val pos = ECSEngine.createComponent(PosComp::class.java)
-        val dir = ECSEngine.createComponent(DirComp::class.java)
-        val time = ECSEngine.createComponent(TimeComp::class.java)
-        val draw = ECSEngine.createComponent(Drawable2DComp::class.java)
-        val control = ECSEngine.createComponent(ControlComp::class.java)
-        val emitter = ECSEngine.createComponent(ParticleEmitter::class.java)
-        val collider = ECSEngine.createComponent(ColliderComp::class.java)
+        ECSEngine.createComponent(TimeComp::class.java, entity)
+        val pos = ECSEngine.createComponent(PosComp::class.java, entity)
+        val dir = ECSEngine.createComponent(DirComp::class.java, entity)
+        val draw = ECSEngine.createComponent(Drawable2DComp::class.java, entity)
+        val control = ECSEngine.createComponent(ControlComp::class.java, entity)
+        val collider = ECSEngine.createComponent(ColliderComp::class.java, entity)
 
         collider.pushBack = true
         collider.collidingWithTiles = MapElement.wall
         collider.collidingTile = {entity, mapTile, mapElement ->
             if (mapElement is Wall)
-                CollisionSystem.wallCollision(PosComp.mapper.get(entity), DirComp.mapper.get(entity), mapElement, mapTile)
+                CollisionSystem.wallCollideAndStick(pos, mapElement, dir)
         }
         collider.collidingWith = Ids.cyclop
         collider.id = Ids.player
@@ -41,16 +43,16 @@ object Player {
         dir.setSpeed(Cst.Player.speed, Cst.Player.speed)
 
         pos.z = Layers.player
-        draw.batch = AmbContext.cxt.inject()
-        draw.tr = assMan.textureRegions[Cst.Player.tr]
+        draw.draw = {
+            it.setColor(color)
+            it.draw(tr, pos.x, pos.y, pos.w, pos.h)
+        }
 
         control.onClick = {
             ECSEngine.addEntity(
                 PlayerShot.init(ECSEngine.createEntity(), pos.x, pos.y, GInput.clicX() - pos.x, GInput.clicY() - pos.y)
             )
         }
-
-        entity.add(pos).add(dir).add(time).add(draw).add(control).add(emitter).add(collider)
         return entity
     }
 

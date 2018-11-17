@@ -14,9 +14,8 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import ktx.ashley.allOf
 import ktx.ashley.has
-import ktx.collections.contains
 
-class CollisionSystem : IntervalIteratingSystem(family, 0.045f) {
+class CollisionSystem : IntervalIteratingSystem(family, 0.035f) {
 
     override fun processEntity(entity: Entity) {
 //        bench.begin()
@@ -122,12 +121,24 @@ class CollisionSystem : IntervalIteratingSystem(family, 0.045f) {
             }
         }
 
-        fun wallCollision(pos: PosComp, wall: Wall, tile: MapTile) {
+        fun wallCollideAndStick(pos: PosComp, wall: Wall, dir: DirComp) {
             when (wall.exposedSide) {
-                GSide.LEFT ->   pos.x = tile.worldX - pos.w
-                GSide.RIGHT ->  pos.x = tile.worldRight
-                GSide.TOP ->    pos.y = tile.worldUp
-                GSide.BOTTOM -> pos.y = tile.worldY - pos.h
+                GSide.LEFT ->   {
+                    pos.x = wall.tile.worldX - pos.w
+                    dir.setDirAndKeepSpeed(0f, dir.dirY)
+                }
+                GSide.RIGHT ->  {
+                    pos.x = wall.tile.worldRight
+                    dir.setDirAndKeepSpeed(0f, dir.dirY)
+                }
+                GSide.TOP ->    {
+                    pos.y = wall.tile.worldUp
+                    dir.setDirAndKeepSpeed(dir.dirX, 0f)
+                }
+                GSide.BOTTOM -> {
+                    pos.y = wall.tile.worldY - pos.h
+                    dir.setDirAndKeepSpeed(dir.dirX, 0f)
+                }
             }
 
         }
