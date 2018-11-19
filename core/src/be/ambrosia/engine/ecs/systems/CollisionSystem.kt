@@ -10,14 +10,15 @@ import be.ambrosia.engine.map.globalelems.Wall
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IntervalIteratingSystem
+import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import ktx.ashley.allOf
 import ktx.ashley.has
 
-class CollisionSystem : IntervalIteratingSystem(family, 0.035f) {
+class CollisionSystem : IteratingSystem(family) {
 
-    override fun processEntity(entity: Entity) {
+    override fun processEntity(entity: Entity, delta: Float) {
 //        bench.begin()
         val pos = posMapper.get(entity)
         val rect = getRect(pos, rect)
@@ -28,7 +29,7 @@ class CollisionSystem : IntervalIteratingSystem(family, 0.035f) {
                         if (collider.collidingWithTiles and it.id != 0)
                             collider.collidingTile(entity, tile, it)
                     }
-                    tile.entities.remove(entity)
+//                    tile.entities.remove(entity)
                 }
                 .flatMap { it.entities }
                 .filter { isColliding(entity, collider, rect, it, colliderMapper.get(it)) }
@@ -40,9 +41,9 @@ class CollisionSystem : IntervalIteratingSystem(family, 0.035f) {
                     collider.collidesWith(entity, other)
                     // TODO check those
                     if (collider.pushBack)
-                        pushBack(pos, otherPos.x, otherPos.y, pushBackStrength)
+                        pushBack(pos, otherPos, pushBackStrength)
                     if (otherCollider.pushBack)
-                        pushBack(otherPos, pos.x, pos.y, pushBackStrength)
+                        pushBack(otherPos, pos, pushBackStrength)
                     if (collider.pushBounce)
                         pushBounce(entity, other)
                     if (otherCollider.pushBounce)
@@ -75,15 +76,15 @@ class CollisionSystem : IntervalIteratingSystem(family, 0.035f) {
                 ColliderComp::class).get()
 
         fun pushBounce(me: Entity, other: Entity) {
-            if (other.has(DirComp.mapper) && me.has(DirComp.mapper)) {
-                val otherDir = DirComp.mapper.get(other)
-                DirComp.mapper.get(me).setDir(otherDir.previousDir.x, otherDir.previousDir.y)
-            }
+//            if (other.has(DirComp.mapper) && me.has(DirComp.mapper)) {
+//                val otherDir = DirComp.mapper.get(other)
+//                DirComp.mapper.get(me).setDir(otherDir.previousDir.x, otherDir.previousDir.y)
+//            }
         }
 
-        fun pushBack(mePos: PosComp, otherX: Float, otherY: Float, pushBackStrength: Float) {
-            v2.set(mePos.x - otherX, mePos.y - otherY)
-              .setLength((mePos.w + mePos.h / v2.len()) * pushBackStrength)
+        fun pushBack(mePos: PosComp, otherPos: PosComp, pushBackStrength: Float) {
+            v2.set(mePos.centerX - otherPos.centerX, mePos.centerY - otherPos.centerY)
+                .setLength((mePos.w + mePos.h / v2.len()) * pushBackStrength)
             mePos.x += v2.x
             mePos.y += v2.y
         }
@@ -124,19 +125,19 @@ class CollisionSystem : IntervalIteratingSystem(family, 0.035f) {
         fun wallCollideAndStick(pos: PosComp, wall: Wall, dir: DirComp) {
             when (wall.exposedSide) {
                 GSide.LEFT ->   {
-                    pos.x = wall.tile.worldX - pos.w
+                    pos.x = (wall.tile.worldX - pos.w) - 0.01f
                     dir.setDirAndKeepSpeed(0f, dir.dirY)
                 }
                 GSide.RIGHT ->  {
-                    pos.x = wall.tile.worldRight
+                    pos.x = wall.tile.worldRight + 0.01f
                     dir.setDirAndKeepSpeed(0f, dir.dirY)
                 }
                 GSide.TOP ->    {
-                    pos.y = wall.tile.worldUp
+                    pos.y = wall.tile.worldUp + 0.01f
                     dir.setDirAndKeepSpeed(dir.dirX, 0f)
                 }
                 GSide.BOTTOM -> {
-                    pos.y = wall.tile.worldY - pos.h
+                    pos.y = (wall.tile.worldY - pos.h) - 0.01f
                     dir.setDirAndKeepSpeed(dir.dirX, 0f)
                 }
             }

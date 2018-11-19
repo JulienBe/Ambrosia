@@ -4,12 +4,12 @@ import be.ambrosia.engine.Dimensions
 
 object Cst {
     object Player {
-        var w = Dimensions.pixel * 15
+        var w = Dimensions.pixel * 30
         var speed = Dimensions.pixel * 200
         val tr = "debris"
     }
     object Cyclop {
-        var w = Dimensions.pixel * 8
+        var w = Dimensions.pixel * 6
         var hw = w / 2f
         var wandererAmplitude = Dimensions.pixel * 5
         val minSpeed = 0f

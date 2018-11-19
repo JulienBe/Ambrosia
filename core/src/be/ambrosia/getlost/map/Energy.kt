@@ -41,7 +41,7 @@ class Energy private constructor() : MapElement(energyId) {
 
         fun draw(batch: GBatch, e: Energy) {
             e.energySpread += GTime.delta
-            batch.setColor(Math.min(e.energy * 0.1f, 1f), Math.min(e.energy * 0.05f, 1f), Math.min(e.energy * 0.2f, 1f), 1f)
+            batch.setColor(Math.min(e.energy * 0.05f, 1f), Math.min(e.energy * 0.01f, 1f), Math.min(e.energy * 0.1f, 1f), 1f)
             batch.draw(basicTexture, e.tile.worldX, e.tile.worldY, GameMap.tileSize, GameMap.tileSize)
             if (e.energy > 0 && e.energySpread > energySpreadSpeed) {
                 e.energySpread = -rand.float(0.5f)

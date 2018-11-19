@@ -15,6 +15,7 @@ import be.ambrosia.getlost.Cst
 import be.ambrosia.getlost.Ids
 import be.ambrosia.getlost.Layers
 import com.badlogic.ashley.core.Entity
+import com.badlogic.gdx.graphics.OrthographicCamera
 
 object Player {
 
@@ -29,8 +30,10 @@ object Player {
         val draw = ECSEngine.createComponent(Drawable2DComp::class.java, entity)
         val control = ECSEngine.createComponent(ControlComp::class.java, entity)
         val collider = ECSEngine.createComponent(ColliderComp::class.java, entity)
+        val trail = ECSEngine.createComponent(TrailComp::class.java, entity)
 
         collider.pushBack = true
+        collider.pushBounce = true
         collider.collidingWithTiles = MapElement.wall
         collider.collidingTile = {entity, mapTile, mapElement ->
             if (mapElement is Wall)
@@ -52,6 +55,12 @@ object Player {
             ECSEngine.addEntity(
                 PlayerShot.init(ECSEngine.createEntity(), pos.x, pos.y, GInput.clicX() - pos.x, GInput.clicY() - pos.y)
             )
+        }
+
+        trail.draw = { gBatch, entity ->
+            val pos = PosComp.mapper[entity]
+            gBatch.setColor(color)
+            gBatch.draw(tr, pos.x, pos.y, pos.w, pos.h)
         }
         return entity
     }

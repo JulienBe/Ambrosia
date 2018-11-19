@@ -13,3 +13,6 @@
 # CODE cyclops are eating energy : 18/11/16 : 1-00
 # CODE cyclops are drowing and dying : 18/11/16 : 0-50
 # CODE make controlled entities tiles collisions independent of collision timer : 18/11/17 : 0-05
+# CODE add the ability to have a trail : 18/11/17 : 0-20
+# CODE fix collision gap : 18/11/19 : 0-30
+# GAMEPLAY camera follow controlled bidule : 18/11/19 : 0-05

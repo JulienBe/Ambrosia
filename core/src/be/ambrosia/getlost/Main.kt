@@ -7,6 +7,7 @@ import be.ambrosia.engine.g.GBatch
 import be.ambrosia.engine.g.GTime
 import be.ambrosia.engine.map.GameMap
 import be.ambrosia.getlost.map.MapElements
+import be.ambrosia.getlost.templates.Cyclop
 import be.ambrosia.getlost.templates.CyclopSpwaner
 import be.ambrosia.getlost.templates.Player
 import com.badlogic.gdx.Gdx
@@ -28,7 +29,8 @@ class Main : KtxScreen {
         MapElements.init()
         cam.update()
         ECSEngine.addEntity(Player.init(ECSEngine.createEntity()))
-        ECSEngine.addEntity(CyclopSpwaner.init(ECSEngine.createEntity()))
+//        ECSEngine.addEntity(CyclopSpwaner.init(ECSEngine.createEntity()))
+        ECSEngine.addEntity(Cyclop.init(ECSEngine.createEntity(), 300f, 300f))
     }
 
     override fun render(delta: Float) {

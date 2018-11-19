@@ -32,6 +32,14 @@ object PlayerShot {
         val time = ECSEngine.createComponent(TimeComp::class.java, entity)
         val draw = ECSEngine.createComponent(Drawable2DComp::class.java, entity)
         val collider = ECSEngine.createComponent(ColliderComp::class.java, entity)
+        val trail = ECSEngine.createComponent(TrailComp::class.java, entity)
+
+        trail.lifetime = 2
+        trail.draw = { it, e ->
+            val p = PosComp.mapper[e]
+            it.setColor(color)
+            it.draw(tr, p.x, p.y, p.w, p.h)
+        }
 
         collider.pushBack = false
         collider.collidingWithTiles = MapElement.wall

@@ -11,7 +11,6 @@ import com.badlogic.ashley.systems.SortedIteratingSystem
 import ktx.ashley.allOf
 import java.util.*
 
-
 class Drawing2DSystem : SortedIteratingSystem(family, ZComparator()) {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {

@@ -1,6 +1,9 @@
 package be.ambrosia.engine.map
 
+import be.ambrosia.engine.AmbContext
+import be.ambrosia.engine.AssMan
 import be.ambrosia.engine.g.GBatch
+import be.ambrosia.getlost.Cst
 import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.utils.Pool
 import ktx.collections.GdxArray
@@ -74,7 +77,7 @@ class MapTile private constructor() {
     }
 
     companion object {
-
+        val tr = AmbContext.cxt.inject<AssMan>().textureRegions[Cst.Cyclop.tr]
         val pool = object : Pool<MapTile>() {
             override fun newObject(): MapTile {
                 return MapTile()

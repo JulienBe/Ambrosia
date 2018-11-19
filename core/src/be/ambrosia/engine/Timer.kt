@@ -18,6 +18,11 @@ class Timer private constructor() {
         pool.free(this)
     }
 
+    fun setOnTrigger(function: (Entity) -> Boolean): Timer {
+        onTrigger = function
+        return this
+    }
+
     companion object {
         private val pool = object : Pool<Timer>() {
             override fun newObject(): Timer {

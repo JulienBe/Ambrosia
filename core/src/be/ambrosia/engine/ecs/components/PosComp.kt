@@ -10,6 +10,8 @@ class PosComp(var x: Float = 0f, var y: Float = 0f, var z: Float = 0f, var w: Fl
     val tileSet = GdxSet<MapTile>()
     var hw = w / 2f
     var hh = h / 2f
+    val centerX: Float get() = x + hw
+    val centerY: Float get() = y + hh
 
     fun set(w: Float, h: Float) {
         this.w = w * Dimensions.pixel

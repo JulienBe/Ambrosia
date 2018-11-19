@@ -19,6 +19,7 @@ class GetLost : KtxGame<Screen>() {
         ECSEngine.addSystem(TileBinderSystem())
         ECSEngine.addSystem(SensorSystem())
         ECSEngine.addSystem(CollisionSystem())
+        ECSEngine.addSystem(TrailSystem())
 //        ECSEngine.addSystem(Drawing3DSystem())
         ECSEngine.addSystem(TimeSystem())
         ECSEngine.addSystem(WandererSystem())

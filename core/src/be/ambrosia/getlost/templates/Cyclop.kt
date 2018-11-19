@@ -36,7 +36,6 @@ object Cyclop {
         val closeCollider = ECSEngine.createComponent(ColliderComp::class.java, entity)
         val sensor = ECSEngine.createComponent(SensorComp::class.java, entity)
         val energyConsummerComp = ECSEngine.createComponent(EnergyConsummerComp::class.java, entity)
-        val act = ECSEngine.createComponent(ActComp::class.java, entity)
 
         closeCollider.collidingWith = Ids.player or Ids.cyclop or Ids.energy
         closeCollider.id = Ids.cyclop
@@ -54,13 +53,20 @@ object Cyclop {
             }
         }
         closeCollider.colliding = ::mating
+        closeCollider.pushBounce = true
+        closeCollider.pushBack = true
 
-        act.onAct = {
+        val timer = Timer.obtain()
+        timer.onTrigger = {
             if (energyConsummerComp.energy-- <= 0)
                 ECSEngine.removeEntity(it)
             val size = size(energyConsummerComp.energy)
             pos.set(size, size)
+            timer.nextTrigger += 0.1f
+            true
         }
+        timer.nextTrigger = 2f
+        time.timers.put("energyDrain", timer)
 
         energyConsummerComp.energy = 200
 
