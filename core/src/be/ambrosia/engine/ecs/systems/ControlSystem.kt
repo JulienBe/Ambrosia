@@ -1,5 +1,6 @@
 package be.ambrosia.engine.ecs.systems
 
+import be.ambrosia.engine.AmbContext
 import be.ambrosia.engine.ecs.components.ColliderComp
 import be.ambrosia.engine.ecs.components.ControlComp
 import be.ambrosia.engine.ecs.components.DirComp
@@ -9,6 +10,7 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.OrthographicCamera
 import ktx.ashley.allOf
 
 class ControlSystem : IteratingSystem(family) {
@@ -35,8 +37,9 @@ class ControlSystem : IteratingSystem(family) {
                 if (collider.collidingWithTiles and it.id != 0)
                     collider.collidingTile(entity, tile, it)
             }
-            tile.entities.remove(entity)
         }
+        cam.position.x = pos.centerX
+        cam.position.y = pos.centerY
     }
 
     fun checkKeys(keys: List<Int>): Boolean {
@@ -48,6 +51,7 @@ class ControlSystem : IteratingSystem(family) {
     }
 
     companion object {
+        val cam: OrthographicCamera = AmbContext.cxt.inject()
         val controlMapper = ControlComp.mapper
         val dirMapper = DirComp.mapper
         val posMapper = PosComp.mapper
