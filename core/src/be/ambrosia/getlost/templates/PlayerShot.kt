@@ -7,7 +7,6 @@ import be.ambrosia.engine.ecs.ECSEngine
 import be.ambrosia.engine.ecs.components.*
 import be.ambrosia.engine.ecs.systems.CollisionSystem
 import be.ambrosia.engine.g.GColor
-import be.ambrosia.engine.g.GRand
 import be.ambrosia.engine.map.GameMap
 import be.ambrosia.engine.map.MapElement
 import be.ambrosia.engine.map.MapTile
@@ -25,6 +24,8 @@ object PlayerShot {
     val assMan: AssMan = AmbContext.cxt.inject()
     val tr = assMan.textureRegions[Cst.PlayerShot.tr]
     val color = GColor.convertARGB(1f, 0.7f, 0.4f, 0.5f)
+    val hw = Cst.PlayerShot.hw
+    val w = Cst.PlayerShot.w
 
     fun init(entity: Entity, posX: Float, posY: Float, dirX: Float, dirY: Float): Entity {
         val pos = ECSEngine.createComponent(PosComp::class.java, entity)
@@ -50,7 +51,7 @@ object PlayerShot {
         collider.id = Ids.playerShot
         collider.collidingWith = 0
 
-        pos.set(Cst.PlayerShot.w, Cst.PlayerShot.w)
+        pos.setDim(Cst.PlayerShot.w, Cst.PlayerShot.w)
         dir.setDir(dirX, dirY)
         dir.setDirLength(Cst.PlayerShot.speed)
         dir.setSpeed(Cst.PlayerShot.speed, Cst.PlayerShot.speed)

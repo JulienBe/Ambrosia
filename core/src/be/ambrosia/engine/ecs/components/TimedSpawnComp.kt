@@ -11,6 +11,12 @@ class TimedSpawnComp : TemplateComp {
     var nextSpawnDelay = {rand.float(1f, 3f)}
     var nextSpawn = nextSpawnDelay.invoke()
 
+    override fun reset() {
+        super.reset()
+        nextSpawn = 0f
+        nextSpawnDelay = {rand.float(1f, 3f)}
+    }
+
     companion object {
         val mapper = mapperFor<TimedSpawnComp>()
         val rand = AmbContext.cxt.inject<GRand>()

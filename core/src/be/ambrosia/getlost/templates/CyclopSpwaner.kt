@@ -15,6 +15,7 @@ object CyclopSpwaner {
     fun init(entity: Entity): Entity {
         val spawner = ECSEngine.createComponent(TimedSpawnComp::class.java)
         val time = ECSEngine.createComponent(TimeComp::class.java)
+        println("${time.total}")
         spawner.spawn = { spawn() }
         spawner.nextSpawnDelay = { determineNextSpawn() }
         entity.add(spawner).add(time)

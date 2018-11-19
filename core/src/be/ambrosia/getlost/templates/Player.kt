@@ -2,6 +2,9 @@ package be.ambrosia.getlost.templates
 
 import be.ambrosia.engine.AmbContext
 import be.ambrosia.engine.AssMan
+import be.ambrosia.engine.Dimensions
+import be.ambrosia.engine.Timer
+import be.ambrosia.engine.state.GameState
 import be.ambrosia.engine.ecs.ECSEngine
 import be.ambrosia.engine.ecs.components.*
 import be.ambrosia.engine.ecs.systems.CollisionSystem
@@ -11,11 +14,13 @@ import be.ambrosia.engine.map.MapElement
 import be.ambrosia.engine.map.globalelems.Wall
 import be.ambrosia.engine.particles.Particle
 import be.ambrosia.engine.particles.Particle3D
+import be.ambrosia.engine.state.State
 import be.ambrosia.getlost.Cst
 import be.ambrosia.getlost.Ids
 import be.ambrosia.getlost.Layers
+import be.ambrosia.getlost.components.EnergyConsummerComp
 import com.badlogic.ashley.core.Entity
-import com.badlogic.gdx.graphics.OrthographicCamera
+import ktx.ashley.has
 
 object Player {
 
@@ -31,6 +36,18 @@ object Player {
         val control = ECSEngine.createComponent(ControlComp::class.java, entity)
         val collider = ECSEngine.createComponent(ColliderComp::class.java, entity)
         val trail = ECSEngine.createComponent(TrailComp::class.java, entity)
+        val hp = ECSEngine.createComponent(HPComp::class.java, entity)
+        val time = ECSEngine.createComponent(TimeComp::class.java, entity)
+
+        var canShoot = false
+        val canShootTimer = Timer.obtain()
+        canShootTimer.setOnTrigger {
+            canShoot = true
+            canShootTimer.nextTrigger += 0.1f
+            true
+        }
+
+        hp.hp = 5
 
         collider.pushBack = true
         collider.pushBounce = true
@@ -41,8 +58,20 @@ object Player {
         }
         collider.collidingWith = Ids.cyclop
         collider.id = Ids.player
+        collider.colliding = { me, other ->
+            hp.hp -= 1
+            if (other.has(EnergyConsummerComp.mapper)) {
+                EnergyConsummerComp.mapper[other].energy -= 100
+            }
+            if (hp.hp < 0) {
+                ECSEngine.removeEntity(me)
+                State.changeState(GameState.LOST)
+            }
+        }
 
-        pos.set(Cst.Player.w, Cst.Player.w)
+        pos.setDim(Cst.Player.w, Cst.Player.w)
+        pos.x = Dimensions.gameHW
+        pos.y = Dimensions.gameHH
         dir.setSpeed(Cst.Player.speed, Cst.Player.speed)
 
         pos.z = Layers.player
@@ -53,7 +82,7 @@ object Player {
 
         control.onClick = {
             ECSEngine.addEntity(
-                PlayerShot.init(ECSEngine.createEntity(), pos.x, pos.y, GInput.clicX() - pos.x, GInput.clicY() - pos.y)
+                PlayerShot.init(ECSEngine.createEntity(), pos.centerX - PlayerShot.hw, pos.centerY - PlayerShot.hw, (GInput.clicX() - pos.x), (GInput.clicY() - pos.y))
             )
         }
 

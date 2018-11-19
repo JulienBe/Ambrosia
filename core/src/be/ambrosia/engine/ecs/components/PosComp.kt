@@ -13,7 +13,7 @@ class PosComp(var x: Float = 0f, var y: Float = 0f, var z: Float = 0f, var w: Fl
     val centerX: Float get() = x + hw
     val centerY: Float get() = y + hh
 
-    fun set(w: Float, h: Float) {
+    fun setDim(w: Float, h: Float) {
         this.w = w * Dimensions.pixel
         this.h = h * Dimensions.pixel
         hw = w / 2f

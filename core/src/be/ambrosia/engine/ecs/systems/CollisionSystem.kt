@@ -32,7 +32,8 @@ class CollisionSystem : IteratingSystem(family) {
 //                    tile.entities.remove(entity)
                 }
                 .flatMap { it.entities }
-                .filter { isColliding(entity, collider, rect, it, colliderMapper.get(it)) }
+                .filter { colliderMapper.get(it) != null &&
+                        isColliding(entity, collider, rect, it, colliderMapper.get(it)) }
                 .distinct()
                 .forEach { other ->
                     val otherCollider = colliderMapper[other]

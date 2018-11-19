@@ -61,7 +61,7 @@ object Cyclop {
             if (energyConsummerComp.energy-- <= 0)
                 ECSEngine.removeEntity(it)
             val size = size(energyConsummerComp.energy)
-            pos.set(size, size)
+            pos.setDim(size, size)
             timer.nextTrigger += 0.1f
             true
         }
@@ -78,7 +78,7 @@ object Cyclop {
         time.timers.put(reproduceTimerKey, Timer.obtain())
         wanderer.amplitude = Cst.Cyclop.wandererAmplitude
         body.scale(Cst.Cyclop.w, Cst.Cyclop.w)
-        pos.set(Cst.Cyclop.w, Cst.Cyclop.w)
+        pos.setDim(Cst.Cyclop.w, Cst.Cyclop.w)
         dir.setSpeed(Cst.Cyclop.minSpeed, Cst.Cyclop.maxSpeed)
 
         pos.x = x
