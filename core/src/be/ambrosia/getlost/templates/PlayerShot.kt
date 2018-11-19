@@ -75,6 +75,7 @@ object PlayerShot {
             true
         }
         time.timers.put("bardaf (ttl)", timer)
+        time.player = true
 
         return entity
     }

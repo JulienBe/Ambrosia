@@ -4,7 +4,7 @@ import be.ambrosia.engine.Timer
 import ktx.ashley.mapperFor
 import ktx.collections.GdxMap
 
-class TimeComp(var delta: Float = 0f, var total: Float = 0f, var player: Boolean = true) : TemplateComp {
+class TimeComp(var delta: Float = 0f, var total: Float = 0f, var player: Boolean = false) : TemplateComp {
 
     val timers = GdxMap<String, Timer>()
 

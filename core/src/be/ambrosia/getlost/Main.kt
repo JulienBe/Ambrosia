@@ -27,6 +27,7 @@ class Main : KtxScreen {
     val cam: OrthographicCamera = AmbContext.cxt.inject()
     val debugRenderer = AmbContext.cxt.inject<Box2DDebugRenderer>()
     val box2D = B2DGears()
+    val metronom = Metronom()
 
     init {
         MapElements.init()
@@ -68,7 +69,8 @@ class Main : KtxScreen {
                     State.changeState(GameState.RUNNING)
             }
             GameState.RUNNING -> {
-                GTime.majDeltas(delta, delta)
+                metronom.act()
+                GTime.majDeltas(metronom.mobsDelta, metronom.playerDelta)
                 GameMap.draw(b)
                 GameMap.clearEntitesOnTiles()
                 ECSEngine.update(delta)

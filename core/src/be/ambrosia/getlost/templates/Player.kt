@@ -39,13 +39,16 @@ object Player {
         val hp = ECSEngine.createComponent(HPComp::class.java, entity)
         val time = ECSEngine.createComponent(TimeComp::class.java, entity)
 
+        time.player = true
+
         var canShoot = false
         val canShootTimer = Timer.obtain()
         canShootTimer.setOnTrigger {
             canShoot = true
-            canShootTimer.nextTrigger += 0.1f
             true
         }
+        canShootTimer.nextTrigger = 0f
+        time.timers.put("canShoot", canShootTimer)
 
         hp.hp = 5
 
@@ -81,9 +84,15 @@ object Player {
         }
 
         control.onClick = {
-            ECSEngine.addEntity(
-                PlayerShot.init(ECSEngine.createEntity(), pos.centerX - PlayerShot.hw, pos.centerY - PlayerShot.hw, (GInput.clicX() - pos.x), (GInput.clicY() - pos.y))
-            )
+            if (canShoot) {
+                ECSEngine.addEntity(
+                        PlayerShot.init(ECSEngine.createEntity(),
+                                pos.centerX, pos.centerY,
+                                GInput.clicX() - pos.centerX, GInput.clicY() - pos.centerY)
+                )
+                canShootTimer.nextTrigger = canShootTimer.current + 0.2f
+                canShoot = false
+            }
         }
 
         trail.draw = { gBatch, entity ->

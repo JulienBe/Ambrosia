@@ -2,6 +2,7 @@ package be.ambrosia.engine.ecs.systems
 
 import be.ambrosia.engine.ecs.components.TimeComp
 import be.ambrosia.engine.g.GBench
+import be.ambrosia.engine.g.GTime
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IteratingSystem
@@ -12,7 +13,7 @@ class TimeSystem : IteratingSystem(family) {
     override fun processEntity(entity: Entity, deltaTime: Float) {
 //        bench.begin()
         val e = time.get(entity)
-        e.delta = deltaTime
+        e.delta = if (e.player) GTime.playerDelta else GTime.delta
         e.total += e.delta
         e.timers.forEach {
             it.value.current += e.delta
